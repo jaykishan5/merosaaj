@@ -124,14 +124,14 @@ export default function ProfileSettingsModal({ isOpen, onClose, onUpdate }: Prof
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-w-[480px] w-[95vw] px-0 py-0 overflow-hidden bg-[#fcfaf2] border-none shadow-2xl rounded-3xl">
+            <DialogContent className="max-w-[480px] w-[95vw] px-0 py-0 overflow-hidden bg-[#fcfaf2] border-none shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] rounded-[2.5rem]">
                 <DialogHeader className="bg-[#fcfaf2] border-b border-black/5 px-8 py-8">
                     <div className="flex items-center gap-5">
-                        <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-xl shadow-black/5 border border-white">
+                        <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-xl shadow-black/5 border border-white transform -rotate-3 hover:rotate-0 transition-transform duration-500">
                             <Sparkles className="w-6 h-6 text-accent animate-pulse" />
                         </div>
                         <div className="flex-1">
-                            <DialogTitle className="text-2xl font-black italic tracking-tighter font-serif text-primary uppercase leading-tight">Personal Profile</DialogTitle>
+                            <DialogTitle className="text-2xl font-black italic tracking-tighter font-serif text-primary uppercase leading-tight">Identity Vault</DialogTitle>
                             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mt-1">Update your digital identity</p>
                         </div>
                         <button onClick={onClose} className="p-2 hover:bg-black/5 rounded-full transition-all">
@@ -140,7 +140,7 @@ export default function ProfileSettingsModal({ isOpen, onClose, onUpdate }: Prof
                     </div>
                 </DialogHeader>
 
-                <div className="px-10 py-12">
+                <div className="px-10 py-10">
                     {fetching ? (
                         <div className="flex flex-col items-center py-24">
                             <div className="relative">
@@ -164,7 +164,7 @@ export default function ProfileSettingsModal({ isOpen, onClose, onUpdate }: Prof
                                     className="relative group cursor-pointer"
                                     onClick={() => fileInputRef.current?.click()}
                                 >
-                                    <div className="w-40 h-40 rounded-[3rem] border-8 border-white overflow-hidden relative transition-all duration-500 group-hover:scale-105 group-hover:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] bg-muted">
+                                    <div className="w-44 h-44 rounded-[4rem] border-[12px] border-white overflow-hidden relative transition-all duration-700 group-hover:scale-[1.02] group-hover:rounded-[3.5rem] shadow-[0_30px_60px_-12px_rgba(0,0,0,0.15)] bg-white">
                                         {isUploading ? (
                                             <div className="absolute inset-0 z-20 bg-white/80 flex items-center justify-center backdrop-blur-md">
                                                 <Loader2 className="w-10 h-10 text-accent animate-spin" />
@@ -186,14 +186,16 @@ export default function ProfileSettingsModal({ isOpen, onClose, onUpdate }: Prof
                                         )}
 
                                         {/* Hover Overlay */}
-                                        <div className="absolute inset-0 bg-accent/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-                                            <div className="bg-white/90 p-3 rounded-2xl shadow-xl flex items-center gap-2">
-                                                <Upload className="w-5 h-5 text-accent animate-bounce" />
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-accent">Update</span>
+                                        <div className="absolute inset-0 bg-primary/40 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center backdrop-blur-[4px]">
+                                            <div className="bg-white p-4 rounded-2xl shadow-2xl flex flex-col items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                                                <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
+                                                    <Upload className="w-5 h-5 text-accent animate-bounce" />
+                                                </div>
+                                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Change Avatar</span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="absolute -bottom-2 -right-2 bg-accent text-white p-3.5 rounded-2xl shadow-2xl border-4 border-white z-10 transition-transform group-hover:scale-110 group-hover:rotate-6">
+                                    <div className="absolute -bottom-2 -right-2 bg-gradient-to-br from-accent to-red-800 text-white p-4 rounded-2xl shadow-[0_10px_30px_rgba(139,0,0,0.4)] border-4 border-white z-10 transition-all duration-500 group-hover:scale-110 group-hover:rotate-12 group-hover:shadow-[0_15px_40px_rgba(139,0,0,0.5)]">
                                         <Camera className="w-5 h-5" />
                                     </div>
                                 </div>
@@ -212,7 +214,7 @@ export default function ProfileSettingsModal({ isOpen, onClose, onUpdate }: Prof
                                             required
                                             value={formData.name}
                                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                            className="w-full pl-16 pr-8 py-5 bg-white border border-black/5 rounded-full outline-none focus:ring-4 focus:ring-accent/5 focus:border-accent transition-all font-bold text-sm text-primary shadow-sm placeholder:text-muted-foreground/30"
+                                            className="w-full pl-16 pr-8 py-5 bg-gradient-to-b from-white to-white/50 border border-black/5 rounded-[2rem] outline-none focus:ring-4 focus:ring-accent/10 focus:border-accent/30 transition-all font-bold text-sm text-primary shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] placeholder:text-muted-foreground/30"
                                             placeholder="Your name"
                                         />
                                     </div>
@@ -228,7 +230,7 @@ export default function ProfileSettingsModal({ isOpen, onClose, onUpdate }: Prof
                                             type="tel"
                                             value={formData.phone}
                                             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                            className="w-full pl-16 pr-8 py-5 bg-white border border-black/5 rounded-full outline-none focus:ring-4 focus:ring-accent/5 focus:border-accent transition-all font-bold text-sm text-primary shadow-sm placeholder:text-muted-foreground/30"
+                                            className="w-full pl-16 pr-8 py-5 bg-gradient-to-b from-white to-white/50 border border-black/5 rounded-[2rem] outline-none focus:ring-4 focus:ring-accent/10 focus:border-accent/30 transition-all font-bold text-sm text-primary shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] placeholder:text-muted-foreground/30"
                                             placeholder="Connect your device"
                                         />
                                     </div>
