@@ -38,7 +38,7 @@ export default function Navbar() {
             <div className={`bg-primary text-primary-foreground border-b border-white/10 transition-all duration-300 ${isScrolled ? "py-2" : "py-4"}`}>
                 <div className="max-w-[1440px] mx-auto px-4 md:px-6 flex items-center justify-between gap-4 md:gap-8">
                     {/* Logo */}
-                    <Link href="/" className="shrink-0 flex items-center gap-3 group relative">
+                    <Link href="/" className="shrink-0 flex items-center gap-2 sm:gap-3 group relative">
                         <div className="relative">
                             <div className="absolute inset-0 bg-accent blur-lg opacity-20 group-hover:opacity-40 transition-opacity"></div>
                             <div className="w-10 h-10 bg-gradient-to-br from-accent to-red-700 rounded-xl flex items-center justify-center transform group-hover:scale-105 group-hover:-rotate-3 transition-all duration-300 shadow-xl shadow-accent/20 border border-white/10 relative z-10">
@@ -46,8 +46,8 @@ export default function Navbar() {
                             </div>
                         </div>
                         <div className="flex flex-col justify-center">
-                            <h1 className="text-xl sm:text-3xl font-black tracking-tighter leading-none flex items-center gap-0.5 font-serif italic">
-                                <span className="hidden xs:block">Merosaaj</span><span className="w-1.5 h-1.5 rounded-full bg-accent inline-block mb-1 animate-pulse"></span>
+                            <h1 className="text-lg sm:text-3xl font-black tracking-tighter leading-none flex items-center gap-0.5 font-serif italic">
+                                Merosaaj<span className="w-1.5 h-1.5 rounded-full bg-accent inline-block mb-1 animate-pulse"></span>
                             </h1>
                             <span className="text-[8px] font-bold tracking-[0.3em] text-primary-foreground/40 uppercase pl-0.5 group-hover:text-accent transition-colors font-outfit">Est. 2026</span>
                         </div>
