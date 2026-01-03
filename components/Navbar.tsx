@@ -1,0 +1,176 @@
+"use client";
+
+import Link from "next/link";
+import { ShoppingBag, User, Menu, Search, Heart, ChevronDown } from "lucide-react";
+import { useCart } from "@/lib/store";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import SearchBar from "./SearchBar";
+
+export default function Navbar() {
+    const totalItems = useCart((state) => state.totalItems());
+    const [mounted, setMounted] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const { data: session } = useSession();
+    const pathname = usePathname();
+
+    useEffect(() => {
+        setMounted(true);
+        const handleScroll = () => setIsScrolled(window.scrollY > 20);
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
+    const categories = [
+        { name: "Men", href: "/shop?gender=Men" },
+        { name: "Women", href: "/shop?gender=Women" },
+        { name: "Accessories", href: "/shop?category=Accessories" },
+        { name: "Limited Drops", href: "/shop?category=Limited" },
+    ];
+
+    return (
+        <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+            {/* Top Bar - Branding and Search (Commercial Focus) */}
+            <div className={`bg-primary text-primary-foreground border-b border-white/10 transition-all duration-300 ${isScrolled ? "py-2" : "py-4"}`}>
+                <div className="max-w-7xl mx-auto px-4 flex items-center justify-between gap-8">
+                    {/* Logo */}
+                    <Link href="/" className="shrink-0 flex items-center gap-3 group relative">
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-accent blur-lg opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                            <div className="w-10 h-10 bg-gradient-to-br from-accent to-red-700 rounded-xl flex items-center justify-center transform group-hover:scale-105 group-hover:-rotate-3 transition-all duration-300 shadow-xl shadow-accent/20 border border-white/10 relative z-10">
+                                <span className="text-white font-black text-xl italic tracking-tighter font-serif">M</span>
+                            </div>
+                        </div>
+                        <div className="flex flex-col justify-center">
+                            <h1 className="text-3xl font-black tracking-tighter leading-none flex items-center gap-0.5 font-serif italic">
+                                Merosaaj<span className="w-1.5 h-1.5 rounded-full bg-accent inline-block mb-1 animate-pulse"></span>
+                            </h1>
+                            <span className="text-[8px] font-bold tracking-[0.3em] text-primary-foreground/40 uppercase pl-0.5 group-hover:text-accent transition-colors font-outfit">Est. 2026</span>
+                        </div>
+                    </Link>
+
+                    {/* Search Bar (Smart) */}
+                    <div className="hidden md:flex flex-1 max-w-xl justify-center">
+                        <SearchBar />
+                    </div>
+
+                    {/* Icons */}
+                    <div className="flex items-center space-x-1 sm:space-x-4">
+                        <button className="md:hidden p-2 hover:bg-white/10 rounded-full transition-colors text-primary-foreground/70 hover:text-white">
+                            <Search className="w-5 h-5" />
+                        </button>
+
+                        <Link href="/wishlist" className="p-2 hover:bg-white/10 rounded-full transition-colors text-primary-foreground/70 hover:text-white relative group">
+                            <Heart className="w-5 h-5" />
+                            <span className="absolute -top-1 -right-1 group-hover:block transition-all bg-accent text-white text-[8px] px-1 rounded-full border border-primary">NEW</span>
+                        </Link>
+
+                        <Link href="/cart" className="p-2 hover:bg-white/10 rounded-full transition-all relative text-primary-foreground/70 hover:text-white">
+                            <ShoppingBag className="w-5 h-5" />
+                            {mounted && totalItems > 0 && (
+                                <motion.span
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    className="absolute -top-1 -right-1 bg-accent text-white text-[9px] w-4 h-4 flex items-center justify-center rounded-full font-black border border-primary"
+                                >
+                                    {totalItems}
+                                </motion.span>
+                            )}
+                        </Link>
+
+                        <Link href={session ? "/profile" : "/login"} className="hidden sm:flex items-center gap-2 p-2 hover:bg-white/10 rounded-xl transition-all text-primary-foreground/70 hover:text-white group">
+                            <div className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center overflow-hidden group-hover:border-accent">
+                                <User className="w-4 h-4" />
+                            </div>
+                            <span className="text-[10px] font-black uppercase tracking-widest hidden lg:block">Account</span>
+                        </Link>
+
+                        <button
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                            className="md:hidden p-2 hover:bg-white/10 rounded-full transition-colors text-white"
+                        >
+                            <Menu className="w-6 h-6" />
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Sub-Header - Categories (Tier 2) */}
+            <div className={`hidden md:block bg-background/90 backdrop-blur-xl border-b border-border transition-all duration-300 ${isScrolled ? "h-10" : "h-12"}`}>
+                <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
+                    <ul className="flex items-center h-full space-x-8">
+                        {categories.map((cat) => (
+                            <li key={cat.name} className="h-full">
+                                <Link
+                                    href={cat.href}
+                                    className="h-full flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-accent border-b-2 border-transparent hover:border-accent transition-all relative group"
+                                >
+                                    {cat.name}
+                                    {cat.name === "Men" && <span className="ml-1 text-[8px] bg-accent/10 text-accent px-1 rounded animate-pulse">Hot</span>}
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+
+                    <div className="flex items-center gap-6 text-[9px] font-bold text-muted-foreground">
+                        <Link href="/track-order" className="hover:text-primary transition-colors flex items-center gap-2">
+                            Track Order
+                        </Link>
+                        <Link href="/help" className="hover:text-primary transition-colors">
+                            Help Center
+                        </Link>
+                        <span className="text-accent/50 font-black">STREETWEAR CORE // SEASON 26</span>
+                    </div>
+                </div>
+            </div>
+
+            {/* Mobile Menu Overlay */}
+            <AnimatePresence>
+                {isMobileMenuOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, x: -100 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -100 }}
+                        className="fixed inset-0 z-50 bg-primary md:hidden"
+                    >
+                        <div className="p-8 space-y-8">
+                            <div className="flex justify-between items-center">
+                                <span className="text-white text-2xl font-black italic">MENU</span>
+                                <button onClick={() => setIsMobileMenuOpen(false)} className="text-white text-xs font-black uppercase tracking-widest border border-white/20 px-4 py-2 rounded-lg">Close</button>
+                            </div>
+
+                            <nav className="space-y-6">
+                                {categories.map((cat) => (
+                                    <Link
+                                        key={cat.name}
+                                        href={cat.href}
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        className="block text-4xl font-black text-white hover:text-accent transition-colors"
+                                    >
+                                        {cat.name}
+                                    </Link>
+                                ))}
+                            </nav>
+
+                            <hr className="border-white/10" />
+
+                            <div className="space-y-4">
+                                <Link href="/profile" className="flex items-center gap-4 text-white/70 hover:text-white transition-colors">
+                                    <User className="w-5 h-5" />
+                                    <span className="font-bold uppercase tracking-widest text-xs">My Account</span>
+                                </Link>
+                                <Link href="/wishlist" className="flex items-center gap-4 text-white/70 hover:text-white transition-colors">
+                                    <Heart className="w-5 h-5" />
+                                    <span className="font-bold uppercase tracking-widest text-xs">Wishlist</span>
+                                </Link>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </header>
+    );
+}
