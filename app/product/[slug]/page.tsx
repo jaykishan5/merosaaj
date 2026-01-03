@@ -132,38 +132,48 @@ export default function ProductDetailsPage() {
         <div className="min-h-screen bg-muted/40">
             <Navbar />
 
-            <main className="max-w-[1280px] mx-auto px-4 pt-32 pb-20">
+            <main className="max-w-[1440px] mx-auto px-6 pt-32 pb-20">
                 <Breadcrumbs />
                 <div className="flex flex-col lg:flex-row gap-4 font-sans">
 
-                    {/* Left Column: Visuals (Sticky) */}
-                    <div className="lg:w-[40%] xl:w-[35%]">
+                    {/* Left Column: Visuals */}
+                    <div className="lg:w-[40%]">
                         <div className="lg:sticky lg:top-32 space-y-4">
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="relative aspect-square w-full bg-white rounded-lg overflow-hidden border border-gray-100 shadow-sm group"
-                            >
-                                <Image
-                                    src={product.images[activeImage] || product.images[0]}
-                                    alt={product.name}
-                                    fill
-                                    priority
-                                    className="object-contain p-4 transition-transform duration-700 group-hover:scale-105"
-                                />
-                                {product.discountPrice && (
-                                    <div className="absolute top-4 left-4 bg-accent text-white px-4 py-1.5 rounded-full font-black text-[10px] uppercase tracking-widest shadow-lg">
-                                        -{Math.round((1 - product.discountPrice / product.price) * 100)}%
-                                    </div>
-                                )}
-                            </motion.div>
+                            {/* Main Image Gallery (Scrollable on Mobile) */}
+                            <div className="flex lg:block overflow-x-auto snap-x snap-mandatory lg:overflow-visible scrollbar-none -mx-4 lg:mx-0 px-4 lg:px-0 gap-4">
+                                {product.images.map((img: string, i: number) => (
+                                    <motion.div
+                                        key={i}
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        className="relative aspect-square w-[85vw] lg:w-full flex-shrink-0 bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm snap-center lg:mb-4 group"
+                                    >
+                                        <Image
+                                            src={img}
+                                            alt={`${product.name} view ${i}`}
+                                            fill
+                                            priority={i === 0}
+                                            className="object-contain p-4 lg:p-12 transition-transform duration-700 group-hover:scale-105"
+                                        />
+                                        {i === 0 && product.discountPrice && (
+                                            <div className="absolute top-4 left-4 bg-accent text-white px-3 py-1 md:px-4 md:py-1.5 rounded-full font-black text-[9px] md:text-[10px] uppercase tracking-widest shadow-lg">
+                                                -{Math.round((1 - product.discountPrice / product.price) * 100)}%
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                ))}
+                            </div>
 
-                            {/* Thumbnails */}
-                            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+                            {/* Desktop Thumbnails (Hidden on Mobile) */}
+                            <div className="hidden lg:flex gap-2 overflow-x-auto pb-2 scrollbar-none">
                                 {product.images.map((img: string, i: number) => (
                                     <button
                                         key={i}
-                                        onClick={() => setActiveImage(i)}
+                                        onClick={() => {
+                                            const element = document.querySelectorAll('.snap-center')[i];
+                                            element?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                                            setActiveImage(i);
+                                        }}
                                         className={`relative aspect-square w-20 flex-shrink-0 bg-white rounded-md overflow-hidden border-2 transition-all ${activeImage === i ? "border-accent ring-2 ring-accent/10" : "border-gray-100 hover:border-gray-300"
                                             }`}
                                     >
@@ -174,62 +184,38 @@ export default function ProductDetailsPage() {
                         </div>
                     </div>
 
-                    {/* Middle Column: Info & Variants (Sticky) */}
-                    <div className="lg:w-[35%] xl:w-[40%] bg-white p-8 rounded-lg border border-gray-100 shadow-sm h-fit lg:sticky lg:top-32">
-                        <div className="space-y-8">
+                    {/* Middle Column: Info & Variants */}
+                    <div className="lg:w-[35%] lg:bg-white lg:p-8 lg:rounded-lg lg:border lg:border-gray-100 lg:shadow-sm h-fit">
+                        <div className="space-y-6 md:space-y-8">
                             {/* Header */}
-                            <div>
-                                <h1 className="text-3xl font-bold text-primary leading-tight mb-4 tracking-tight">{product.name}</h1>
-                                <div className="flex flex-wrap items-center justify-between gap-4">
-                                    <div className="flex items-center space-x-6 divide-x divide-gray-100">
+                            <div className="bg-white p-6 lg:p-0 rounded-2xl lg:rounded-none border lg:border-0 border-gray-100 shadow-sm lg:shadow-none">
+                                <h1 className="text-2xl md:text-3xl font-black text-primary leading-tight mb-4 tracking-tighter uppercase italic">{product.name}</h1>
+                                <div className="flex flex-col gap-4">
+                                    <div className="flex items-center gap-4">
                                         <div className="flex items-center">
                                             {[...Array(5)].map((_, i) => (
-                                                <Star key={i} className={`w-3.5 h-3.5 ${i < 4 ? "fill-accent text-accent" : "text-gray-200"}`} />
+                                                <Star key={i} className={`w-3 h-3 ${i < 4 ? "fill-accent text-accent" : "text-gray-200"}`} />
                                             ))}
-                                            <span className="text-[11px] font-bold text-muted-foreground ml-3 hover:text-accent cursor-pointer border-b border-transparent hover:border-accent uppercase tracking-wider">297 Ratings</span>
+                                            <span className="text-[10px] font-bold text-muted-foreground ml-2 uppercase tracking-wider">297 Ratings</span>
                                         </div>
-                                        <span className="text-[11px] font-bold text-muted-foreground pl-6 hover:text-accent cursor-pointer border-b border-transparent hover:border-accent uppercase tracking-wider">28 Answered Questions</span>
+                                        <div className="w-1 h-1 bg-gray-200 rounded-full"></div>
+                                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Nepal's Choice</span>
                                     </div>
-                                    <div className="flex items-center space-x-3">
-                                        <motion.button
-                                            whileHover={{ scale: 1.1 }}
-                                            whileTap={{ scale: 0.9 }}
-                                            onClick={handleShare}
-                                            className="p-2 text-gray-400 hover:text-accent transition-colors"
-                                        >
-                                            <Share2 className="w-5 h-5" />
-                                        </motion.button>
-                                        <motion.button
-                                            whileHover={{ scale: 1.1 }}
-                                            whileTap={{ scale: 0.9 }}
-                                            onClick={() => toggleItem({
-                                                _id: product._id,
-                                                name: product.name,
-                                                slug: product.slug,
-                                                price: product.price,
-                                                discountPrice: product.discountPrice,
-                                                image: product.images[0]
-                                            })}
-                                            className={`p-2 transition-colors ${isWishlisted ? "text-accent fill-accent" : "text-gray-400 hover:text-accent"}`}
-                                        >
-                                            <Heart className={`w-5 h-5 ${isWishlisted ? "fill-current" : ""}`} />
-                                        </motion.button>
-                                    </div>
+                                    <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground mt-2">
+                                        Brand: <span className="text-accent hover:underline cursor-pointer">merosaaj studios</span> | <span className="text-accent hover:underline cursor-pointer">Official Store</span>
+                                    </p>
                                 </div>
-                                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mt-4">
-                                    Brand: <span className="text-accent hover:underline cursor-pointer">merosaaj studios</span> | <span className="text-accent hover:underline cursor-pointer">Official Store</span>
-                                </p>
                             </div>
 
                             <hr className="border-gray-50" />
 
                             {/* Pricing */}
-                            <div className="flex flex-col space-y-1">
-                                <span className="text-5xl font-black text-primary tracking-tighter">{formatPrice(product.discountPrice || product.price)}</span>
+                            <div className="bg-white p-6 lg:p-0 rounded-2xl lg:rounded-none border lg:border-0 border-gray-100 shadow-sm lg:shadow-none">
+                                <span className="text-4xl md:text-5xl font-black text-primary tracking-tighter">{formatPrice(product.discountPrice || product.price)}</span>
                                 {product.discountPrice && (
-                                    <div className="flex items-center space-x-3">
-                                        <span className="text-lg text-muted-foreground line-through decoration-muted-foreground/50">{formatPrice(product.price)}</span>
-                                        <span className="text-sm font-bold text-accent bg-accent/10 px-2 py-0.5 rounded">-{Math.round((1 - product.discountPrice / product.price) * 100)}% OFF</span>
+                                    <div className="flex items-center space-x-3 mt-1">
+                                        <span className="text-base md:text-lg text-muted-foreground line-through decoration-muted-foreground/50">{formatPrice(product.price)}</span>
+                                        <span className="text-[10px] md:text-sm font-black text-accent bg-accent/10 px-2 py-0.5 rounded tracking-widest uppercase">-{Math.round((1 - product.discountPrice / product.price) * 100)}% OFF</span>
                                     </div>
                                 )}
                             </div>
@@ -247,94 +233,132 @@ export default function ProductDetailsPage() {
                                 <div className="bg-accent text-white px-4 py-1.5 rounded-lg text-[9px] font-black">MEROSAAJ EXCLUSIVE</div>
                             </motion.div>
 
-                            {/* Variants Selection */}
-                            <div className="space-y-8">
-                                {/* Color Selector */}
-                                <div className="space-y-4">
-                                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Color Family: <span className="text-primary">{selectedColor}</span></h4>
-                                    <div className="flex flex-wrap gap-2.5">
-                                        {allColors.map((color: any) => (
-                                            <motion.button
-                                                key={color}
-                                                whileHover={{ scale: 1.05 }}
-                                                whileTap={{ scale: 0.95 }}
-                                                onClick={() => setSelectedColor(color)}
-                                                className={`min-w-[70px] px-4 py-2 border-2 rounded-xl transition-all text-[10px] font-black uppercase tracking-widest ${selectedColor === color
-                                                    ? 'border-primary bg-primary text-white shadow-lg'
-                                                    : 'border-gray-100 hover:border-primary/30 text-muted-foreground hover:text-primary'
-                                                    }`}
-                                            >
-                                                {color}
-                                            </motion.button>
-                                        ))}
+                            {/* Variants & Actions Section */}
+                            <div className="bg-white p-6 lg:p-0 rounded-2xl lg:rounded-none border lg:border-0 border-gray-100 shadow-sm lg:shadow-none space-y-8">
+                                {/* Variants Selection */}
+                                <div className="space-y-8">
+                                    {/* Color Selector */}
+                                    <div className="space-y-4">
+                                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Color Family: <span className="text-primary">{selectedColor}</span></h4>
+                                        <div className="flex flex-wrap gap-2.5">
+                                            {allColors.map((color: any) => (
+                                                <motion.button
+                                                    key={color}
+                                                    whileHover={{ scale: 1.05 }}
+                                                    whileTap={{ scale: 0.95 }}
+                                                    onClick={() => setSelectedColor(color)}
+                                                    className={`min-w-[70px] px-4 py-2 border-2 rounded-xl transition-all text-[10px] font-black uppercase tracking-widest ${selectedColor === color
+                                                        ? 'border-primary bg-primary text-white shadow-lg'
+                                                        : 'border-gray-100 hover:border-primary/30 text-muted-foreground hover:text-primary'
+                                                        }`}
+                                                >
+                                                    {color}
+                                                </motion.button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Size Selector */}
+                                    <div className="space-y-4">
+                                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Select Size: <span className="text-primary">{selectedSize}</span></h4>
+                                        <div className="flex flex-wrap gap-2.5">
+                                            {allSizes.map((size: any) => (
+                                                <motion.button
+                                                    key={size}
+                                                    whileHover={{ scale: 1.05 }}
+                                                    whileTap={{ scale: 0.95 }}
+                                                    onClick={() => setSelectedSize(size)}
+                                                    className={`min-w-[50px] h-11 border-2 rounded-xl transition-all text-xs font-black ${selectedSize === size
+                                                        ? 'border-accent bg-accent text-white shadow-lg shadow-accent/20'
+                                                        : 'border-gray-100 hover:border-accent/30 text-muted-foreground hover:text-accent'
+                                                        }`}
+                                                >
+                                                    {size}
+                                                </motion.button>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
 
-                                {/* Size Selector */}
-                                <div className="space-y-4">
-                                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Select Size: <span className="text-primary">{selectedSize}</span></h4>
-                                    <div className="flex flex-wrap gap-2.5">
-                                        {allSizes.map((size: any) => (
-                                            <motion.button
-                                                key={size}
-                                                whileHover={{ scale: 1.05 }}
-                                                whileTap={{ scale: 0.95 }}
-                                                onClick={() => setSelectedSize(size)}
-                                                className={`min-w-[50px] h-11 border-2 rounded-xl transition-all text-xs font-black ${selectedSize === size
-                                                    ? 'border-accent bg-accent text-white shadow-lg shadow-accent/20'
-                                                    : 'border-gray-100 hover:border-accent/30 text-muted-foreground hover:text-accent'
-                                                    }`}
-                                            >
-                                                {size}
-                                            </motion.button>
-                                        ))}
+                                {/* Actions (Sticky on mobile) */}
+                                <div className="space-y-6 pt-4">
+                                    <div className="flex items-center space-x-6">
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Quantity</p>
+                                        <div className="flex items-center bg-muted/30 rounded-xl border border-gray-100 overflow-hidden">
+                                            <button
+                                                onClick={() => handleQuantityChange(-1)}
+                                                className="px-4 py-2 hover:bg-muted text-primary font-bold transition-colors"
+                                            >-</button>
+                                            <span className="px-5 py-2 text-sm font-black">{quantity}</span>
+                                            <button
+                                                onClick={() => handleQuantityChange(1)}
+                                                className="px-4 py-2 hover:bg-muted text-primary font-bold transition-colors"
+                                            >+</button>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <div className={`w-1.5 h-1.5 rounded-full ${currentVariant && currentVariant.stock > 0 ? "bg-accent animate-ping" : "bg-gray-400"}`}></div>
+                                            <p className="text-[10px] font-black text-accent uppercase tracking-widest">
+                                                {currentVariant && currentVariant.stock > 0 ? "In Stock" : "Out of Stock"}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Web Actions */}
+                                    <div className="hidden lg:flex flex-col sm:flex-row gap-4">
+                                        <motion.button
+                                            whileHover={{ scale: 1.02, backgroundColor: "#111111" }}
+                                            whileTap={{ scale: 0.98 }}
+                                            onClick={handleBuyNow}
+                                            disabled={!currentVariant || currentVariant.stock <= 0}
+                                            className="flex-1 bg-primary text-white h-14 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all disabled:opacity-50 shadow-xl shadow-primary/20"
+                                        >
+                                            Instant Buy
+                                        </motion.button>
+                                        <motion.button
+                                            whileHover={{ scale: 1.02, borderColor: "#8B0000", color: "#8B0000" }}
+                                            whileTap={{ scale: 0.98 }}
+                                            onClick={() => handleAddToCart()}
+                                            disabled={!currentVariant || currentVariant.stock <= 0}
+                                            className="flex-1 border-2 border-primary text-primary h-14 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all disabled:opacity-50"
+                                        >
+                                            Add to Bag
+                                        </motion.button>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Actions */}
-                            <div className="space-y-6 pt-4">
-                                <div className="flex items-center space-x-6">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Quantity</p>
-                                    <div className="flex items-center bg-muted/30 rounded-xl border border-gray-100 overflow-hidden">
-                                        <button
-                                            onClick={() => handleQuantityChange(-1)}
-                                            className="px-4 py-2 hover:bg-muted text-primary font-bold transition-colors"
-                                        >-</button>
-                                        <span className="px-5 py-2 text-sm font-black">{quantity}</span>
-                                        <button
-                                            onClick={() => handleQuantityChange(1)}
-                                            className="px-4 py-2 hover:bg-muted text-primary font-bold transition-colors"
-                                        >+</button>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <div className={`w-1.5 h-1.5 rounded-full ${currentVariant && currentVariant.stock > 0 ? "bg-accent animate-ping" : "bg-gray-400"}`}></div>
-                                        <p className="text-[10px] font-black text-accent uppercase tracking-widest">
-                                            {currentVariant && currentVariant.stock > 0 ? "Limited Stock Available" : "Out of Stock"}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-col sm:flex-row gap-4">
-                                    <motion.button
-                                        whileHover={{ scale: 1.02, backgroundColor: "#111111" }}
-                                        whileTap={{ scale: 0.98 }}
-                                        onClick={handleBuyNow}
-                                        disabled={!currentVariant || currentVariant.stock <= 0}
-                                        className="flex-1 bg-primary text-white h-14 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all disabled:opacity-50 shadow-xl shadow-primary/20"
-                                    >
-                                        Instant Buy
-                                    </motion.button>
-                                    <motion.button
-                                        whileHover={{ scale: 1.02, borderColor: "#8B0000", color: "#8B0000" }}
-                                        whileTap={{ scale: 0.98 }}
-                                        onClick={() => handleAddToCart()}
-                                        disabled={!currentVariant || currentVariant.stock <= 0}
-                                        className="flex-1 border-2 border-primary text-primary h-14 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all disabled:opacity-50"
-                                    >
-                                        Add to Bag
-                                    </motion.button>
-                                </div>
+                            {/* Mobile Sticky CTA */}
+                            <div className="fixed bottom-0 left-0 right-0 z-[100] bg-white border-t border-gray-100 p-4 lg:hidden flex gap-3 shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
+                                <motion.button
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => toggleItem({
+                                        _id: product._id,
+                                        name: product.name,
+                                        slug: product.slug,
+                                        price: product.price,
+                                        discountPrice: product.discountPrice,
+                                        image: product.images[0]
+                                    })}
+                                    className={`w-14 h-14 border-2 rounded-2xl flex items-center justify-center transition-colors ${isWishlisted ? "border-accent text-accent fill-accent" : "border-gray-100 text-gray-400"}`}
+                                >
+                                    <Heart className="w-5 h-5" />
+                                </motion.button>
+                                <motion.button
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={() => handleAddToCart()}
+                                    disabled={!currentVariant || currentVariant.stock <= 0}
+                                    className="flex-1 bg-primary text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-primary/10"
+                                >
+                                    Add to Bag
+                                </motion.button>
+                                <motion.button
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={handleBuyNow}
+                                    disabled={!currentVariant || currentVariant.stock <= 0}
+                                    className="flex-1 bg-accent text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-accent/20"
+                                >
+                                    Instant Buy
+                                </motion.button>
                             </div>
                         </div>
                     </div>
@@ -456,13 +480,13 @@ export default function ProductDetailsPage() {
                 </div>
 
                 {/* Bottom Section: Product Description */}
-                <div className="mt-8 bg-white p-12 rounded-lg border border-gray-100 shadow-sm">
+                <div className="mt-8 bg-white p-6 md:p-12 rounded-lg border border-gray-100 shadow-sm">
                     <div className="max-w-3xl">
-                        <h2 className="text-2xl font-black text-primary mb-8 uppercase tracking-widest flex items-center gap-4">
+                        <h2 className="text-xl md:text-2xl font-black text-primary mb-6 md:mb-8 uppercase tracking-widest flex items-center gap-4">
                             <div className="w-8 h-1 bg-accent"></div>
                             The Story
                         </h2>
-                        <div className="prose prose-lg max-w-none text-muted-foreground leading-relaxed whitespace-pre-line font-medium italic">
+                        <div className="prose prose-sm md:prose-lg max-w-none text-muted-foreground leading-relaxed whitespace-pre-line font-medium italic">
                             {product.description}
                         </div>
                     </div>

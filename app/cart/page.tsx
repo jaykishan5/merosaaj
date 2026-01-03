@@ -15,7 +15,7 @@ export default function CartPage() {
         return (
             <div className="min-h-screen bg-background">
                 <Navbar />
-                <main className="max-w-7xl mx-auto px-4 pb-32 pt-32 md:pt-48 text-center">
+                <main className="max-w-[1440px] mx-auto px-6 pb-32 pt-32 md:pt-48 text-center">
                     <h1 className="text-4xl font-bold tracking-tighter mb-4 uppercase">YOUR BAG IS EMPTY</h1>
                     <p className="text-muted-foreground mb-12">Looks like you haven't added anything to your cart yet.</p>
                     <Link href="/shop" className="bg-primary text-primary-foreground px-8 py-4 rounded-full font-bold hover:bg-primary/90 transition">
@@ -30,7 +30,7 @@ export default function CartPage() {
         <div className="min-h-screen bg-background">
             <Navbar />
 
-            <main className="max-w-7xl mx-auto px-4 pb-24 pt-32 md:pt-48">
+            <main className="max-w-[1440px] mx-auto px-6 pb-24 pt-32 md:pt-48">
                 <h1 className="text-4xl font-bold tracking-tighter uppercase mb-12">SHOPPING BAG ({items.length})</h1>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">

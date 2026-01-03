@@ -14,7 +14,7 @@
     "clsx": "^2.1.1",
     "framer-motion": "^11.2.10",
     "lucide-react": "^0.395.0",
-    "mongodb": "^6.7.0",
+    "mongodb": "^6.21.0",
     "mongoose": "^8.4.1",
     "next": "14.2.4",
     "next-auth": "^4.24.7",

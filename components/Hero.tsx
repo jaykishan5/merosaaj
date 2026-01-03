@@ -73,7 +73,7 @@ export default function Hero() {
                                 initial={{ y: 30, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{ delay: 0.4 }}
-                                className="text-6xl md:text-9xl font-black tracking-tighter text-white mb-8 leading-none italic"
+                                className="text-4xl sm:text-6xl md:text-9xl font-black tracking-tighter text-white mb-8 leading-none italic"
                             >
                                 {slides[currentSlide].title.split(" ").map((word, i) => (
                                     <span key={i} className={i === 1 ? "text-accent block md:inline" : ""}>
@@ -86,7 +86,7 @@ export default function Hero() {
                                 initial={{ y: 30, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{ delay: 0.6 }}
-                                className="text-lg text-primary-foreground/70 max-w-2xl mx-auto mb-12 font-medium"
+                                className="text-sm sm:text-lg text-primary-foreground/70 max-w-2xl mx-auto mb-12 font-medium px-4"
                             >
                                 {slides[currentSlide].description}
                             </motion.p>
@@ -95,16 +95,16 @@ export default function Hero() {
                                 initial={{ scale: 0.9, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
                                 transition={{ delay: 0.8 }}
-                                className="flex flex-col sm:flex-row items-center justify-center gap-4"
+                                className="flex flex-col sm:flex-row items-center justify-center gap-4 px-4"
                             >
                                 <Link
                                     href="/shop"
-                                    className="px-10 py-5 bg-white text-primary rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-accent hover:text-white transition-all shadow-xl hover:shadow-accent/40 group"
+                                    className="w-full sm:w-auto px-10 py-4 sm:py-5 bg-white text-primary rounded-2xl font-black text-[10px] sm:text-xs uppercase tracking-[0.2em] hover:bg-accent hover:text-white transition-all shadow-xl hover:shadow-accent/40 group"
                                 >
                                     Explore Drop
                                     <ArrowRight className="inline-block ml-3 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                 </Link>
-                                <button className="px-10 py-5 border-2 border-white/20 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-white/10 transition-all">
+                                <button className="w-full sm:w-auto px-10 py-4 sm:py-5 border-2 border-white/20 text-white rounded-2xl font-black text-[10px] sm:text-xs uppercase tracking-[0.2em] hover:bg-white/10 transition-all">
                                     Read Manifesto
                                 </button>
                             </motion.div>

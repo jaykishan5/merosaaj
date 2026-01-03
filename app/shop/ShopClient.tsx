@@ -81,7 +81,7 @@ export default function ShopPage() {
         <div className="min-h-screen bg-background">
             <Navbar />
 
-            <main className="max-w-7xl mx-auto px-4 pt-32 md:pt-48 pb-24">
+            <main className="max-w-[1440px] mx-auto px-6 pt-32 md:pt-48 pb-24">
                 <Breadcrumbs />
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 space-y-4 md:space-y-0">
@@ -200,7 +200,7 @@ export default function ShopPage() {
                                 ))}
                             </div>
                         ) : products.length > 0 ? (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-12">
+                            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-x-4 md:gap-x-8 gap-y-8 md:gap-y-12">
                                 {products.map((product: any, index: number) => (
                                     <ProductCard
                                         key={product._id}
@@ -233,6 +233,120 @@ export default function ShopPage() {
                     </div>
                 </div>
             </main>
+            {/* Mobile Filter Drawer */}
+            <AnimatePresence>
+                {showFilters && (
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setShowFilters(false)}
+                            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[70] lg:hidden"
+                        />
+                        <motion.div
+                            initial={{ x: "100%" }}
+                            animate={{ x: 0 }}
+                            exit={{ x: "100%" }}
+                            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                            className="fixed right-0 top-0 bottom-0 w-[85%] max-w-sm bg-background z-[80] lg:hidden shadow-2xl overflow-y-auto"
+                        >
+                            <div className="p-8 space-y-10">
+                                <div className="flex justify-between items-center border-b border-border pb-6">
+                                    <h2 className="text-xl font-black italic tracking-tighter">FILTERS</h2>
+                                    <button onClick={() => setShowFilters(false)} className="p-2 hover:bg-muted rounded-full transition-colors">
+                                        <X className="w-5 h-5" />
+                                    </button>
+                                </div>
+
+                                {/* Category Filter (Mobile) */}
+                                <div className="space-y-6">
+                                    <h3 className="text-[10px] font-black tracking-[0.2em] uppercase text-muted-foreground">Collections</h3>
+                                    <div className="flex flex-wrap gap-2">
+                                        {categories.map((cat) => (
+                                            <button
+                                                key={cat}
+                                                onClick={() => handleFilterChange('category', cat)}
+                                                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${categoryParam === cat
+                                                    ? 'bg-primary text-primary-foreground'
+                                                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                                                    }`}
+                                            >
+                                                {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Price Filter (Mobile) */}
+                                <div className="space-y-6">
+                                    <h3 className="text-[10px] font-black tracking-[0.2em] uppercase text-muted-foreground">Price Range</h3>
+                                    <div className="flex items-center gap-4">
+                                        <div className="relative flex-1">
+                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">Rs.</span>
+                                            <input
+                                                type="number"
+                                                placeholder="Min"
+                                                value={minPrice}
+                                                onChange={(e) => setMinPrice(e.target.value)}
+                                                className="w-full bg-muted/50 border border-border rounded-xl py-3 pl-10 pr-2 text-xs focus:ring-2 focus:ring-accent outline-none"
+                                            />
+                                        </div>
+                                        <span className="text-muted-foreground text-xs font-bold">-</span>
+                                        <div className="relative flex-1">
+                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">Rs.</span>
+                                            <input
+                                                type="number"
+                                                placeholder="Max"
+                                                value={maxPrice}
+                                                onChange={(e) => setMaxPrice(e.target.value)}
+                                                className="w-full bg-muted/50 border border-border rounded-xl py-3 pl-10 pr-2 text-xs focus:ring-2 focus:ring-accent outline-none"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Color Filter (Mobile) */}
+                                <div className="space-y-6">
+                                    <h3 className="text-[10px] font-black tracking-[0.2em] uppercase text-muted-foreground">Colors</h3>
+                                    <div className="flex flex-wrap gap-4">
+                                        {["Black", "White", "Cream", "Grey", "Olive", "Navy", "Charcoal"].map((color) => (
+                                            <button
+                                                key={color}
+                                                onClick={() => setSelectedColor(selectedColor === color ? "all" : color)}
+                                                className={`w-10 h-10 rounded-full border-2 transition-all ${selectedColor === color ? "ring-2 ring-accent ring-offset-2 border-transparent scale-110 shadow-lg" : "border-border shadow-sm"
+                                                    }`}
+                                                style={{ backgroundColor: color.toLowerCase() }}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="pt-10">
+                                    <button
+                                        onClick={() => setShowFilters(false)}
+                                        className="w-full py-4 bg-primary text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-primary/20"
+                                    >
+                                        Apply Filters
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setMinPrice("");
+                                            setMaxPrice("");
+                                            setSelectedColor("all");
+                                            handleFilterChange('category', 'all');
+                                            setShowFilters(false);
+                                        }}
+                                        className="w-full py-4 text-muted-foreground font-bold text-xs uppercase tracking-widest mt-4"
+                                    >
+                                        Clear All
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

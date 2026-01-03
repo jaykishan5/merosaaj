@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { X, Plus, Home, Briefcase, MapPin, Trash2, Edit2, Check, Sparkles, Map as MapIcon, Loader2, Navigation, Phone, User } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { X, Plus, Home, Briefcase, MapPin, Trash2, Edit2, Check, Sparkles, Map as MapIcon, Loader2, Navigation, Phone, User, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 interface Address {
@@ -140,238 +140,267 @@ export default function AddressBookModal({ isOpen, onClose, onSelectAddress }: A
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-w-3xl w-[95vw] px-0 py-0 overflow-hidden bg-background max-h-[90vh] flex flex-col">
-                <DialogHeader className="bg-background border-b border-border/50 px-8 py-6">
-                    <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-accent/5 rounded-2xl flex items-center justify-center border border-accent/10">
-                            <MapIcon className="w-5 h-5 text-accent animate-pulse" />
+            <DialogContent className="max-w-3xl w-[95vw] px-0 py-0 overflow-hidden bg-[#fcfaf2] max-h-[90vh] flex flex-col border-none shadow-2xl rounded-3xl">
+                <DialogHeader className="bg-[#fcfaf2] border-b border-black/5 px-8 py-8">
+                    <div className="flex items-center gap-5">
+                        <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-xl shadow-black/5 border border-white">
+                            <MapIcon className="w-6 h-6 text-accent animate-pulse" />
                         </div>
-                        <div>
-                            <DialogTitle className="text-xl font-bold tracking-tight font-serif text-primary">Distribution Book</DialogTitle>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Manage your shipping destinations</p>
+                        <div className="flex-1">
+                            <DialogTitle className="text-2xl font-black italic tracking-tighter font-serif text-primary uppercase leading-tight">Distribution Book</DialogTitle>
+                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mt-1">Manage your shipping destinations</p>
                         </div>
+                        <button onClick={onClose} className="p-2 hover:bg-black/5 rounded-full transition-all">
+                            <X className="w-5 h-5 text-muted-foreground" />
+                        </button>
                     </div>
-                    <button onClick={onClose} className="p-2.5 hover:bg-muted rounded-xl transition-all group">
-                        <X className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:rotate-90 transition-all duration-300" />
-                    </button>
                 </DialogHeader>
 
-                <div className="flex-1 overflow-y-auto custom-scrollbar">
-                    <DialogDescription className="pb-10 pt-6">
-                        {!showForm ? (
-                            <div className="space-y-8">
-                                <button
-                                    onClick={() => setShowForm(true)}
-                                    className="w-full py-8 border-2 border-dashed border-accent/10 bg-accent/[0.02] text-accent rounded-[2rem] font-bold text-xs uppercase tracking-[0.2em] hover:bg-accent/5 hover:border-accent/30 transition-all duration-500 flex flex-col items-center justify-center gap-3 active:scale-[0.99] font-outfit group group shadow-sm hover:shadow-md"
-                                >
-                                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
-                                        <Plus className="w-5 h-5 text-accent" />
-                                    </div>
-                                    Add New Destination
-                                </button>
+                <div className="flex-1 overflow-y-auto custom-scrollbar px-10 py-12">
+                    {!showForm ? (
+                        <div className="space-y-10">
+                            <button
+                                onClick={() => setShowForm(true)}
+                                className="w-full py-10 border-4 border-dashed border-accent/10 bg-white rounded-[3rem] text-accent font-black text-xs uppercase tracking-[0.3em] hover:bg-accent/5 hover:border-accent/30 transition-all duration-500 flex flex-col items-center justify-center gap-4 active:scale-[0.99] group shadow-[0_10px_30px_rgba(0,0,0,0.02)]"
+                            >
+                                <div className="w-12 h-12 rounded-full bg-accent text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                                    <Plus className="w-6 h-6" />
+                                </div>
+                                Add New Destination
+                            </button>
 
-                                {loading ? (
-                                    <div className="flex flex-col items-center py-20">
-                                        <div className="relative">
-                                            <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-                                            <Navigation className="w-6 h-6 absolute inset-0 m-auto text-primary animate-pulse" />
-                                        </div>
-                                        <p className="mt-4 text-[10px] font-black uppercase tracking-widest text-primary/60">Locating Saved Data...</p>
+                            {loading ? (
+                                <div className="flex flex-col items-center py-24">
+                                    <div className="relative">
+                                        <div className="w-20 h-20 border-4 border-accent/5 border-t-accent rounded-full animate-spin"></div>
+                                        <Navigation className="w-8 h-8 absolute inset-0 m-auto text-accent animate-pulse" />
                                     </div>
-                                ) : addresses.length === 0 ? (
-                                    <div className="text-center py-20 bg-muted/30 rounded-[2.5rem] border border-dashed border-border">
-                                        <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
-                                            <MapPin className="w-10 h-10 text-muted-foreground/30" />
-                                        </div>
-                                        <h4 className="text-lg font-bold mb-2 uppercase tracking-tight">No Saved Locations</h4>
-                                        <p className="text-xs text-muted-foreground font-medium max-w-[200px] mx-auto">Your personal address book is empty. Add a delivery point to get started.</p>
+                                    <p className="mt-6 text-[10px] font-black uppercase tracking-[0.3em] text-accent/60">Locating Saved Data...</p>
+                                </div>
+                            ) : addresses.length === 0 ? (
+                                <div className="text-center py-24 bg-white/50 rounded-[3rem] border-2 border-dashed border-black/5">
+                                    <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl">
+                                        <MapPin className="w-10 h-10 text-accent/20" />
                                     </div>
-                                ) : (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        {addresses.map((addr) => (
-                                            <div
-                                                key={addr._id}
-                                                className={`group relative bg-white rounded-[2rem] p-6 transition-all duration-500 hover:shadow-2xl hover:shadow-accent/5 ring-1 ${addr.isDefault
-                                                    ? 'ring-accent/20 bg-accent/[0.01]'
-                                                    : 'ring-border/50 hover:ring-accent/20'
-                                                    }`}
-                                            >
-                                                <div className="relative z-10">
-                                                    <div className="flex justify-between items-start mb-6">
-                                                        <div className="flex items-center gap-2">
-                                                            <div className={`p-2.5 rounded-xl ${addr.isDefault ? 'bg-accent text-white shadow-xl shadow-accent/20' : 'bg-muted/50 text-muted-foreground group-hover:bg-accent/10 group-hover:text-accent transition-all duration-500 border border-border/50'}`}>
-                                                                {getLabelIcon(addr.label)}
-                                                            </div>
-                                                            <div>
-                                                                <span className="font-bold text-[10px] uppercase tracking-wider block font-outfit text-muted-foreground">{addr.label}</span>
-                                                                {addr.isDefault && (
-                                                                    <span className="text-[10px] font-bold text-accent uppercase tracking-tighter italic">Primary Choice</span>
-                                                                )}
-                                                            </div>
+                                    <h4 className="text-xl font-black italic text-primary uppercase tracking-tighter mb-3">No Saved Locations</h4>
+                                    <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.15em] max-w-[240px] mx-auto opacity-60">Your personal address book is empty. Add a delivery point to get started.</p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {addresses.map((addr) => (
+                                        <div
+                                            key={addr._id}
+                                            className={`group relative bg-white rounded-[2.5rem] p-8 transition-all duration-500 hover:shadow-[0_30px_60px_rgba(0,0,0,0.08)] ring-1 ${addr.isDefault
+                                                ? 'ring-accent/20 bg-accent/[0.01]'
+                                                : 'ring-black/5 hover:ring-accent/20'
+                                                }`}
+                                        >
+                                            <div className="relative z-10">
+                                                <div className="flex justify-between items-start mb-8">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className={`p-3 rounded-2xl ${addr.isDefault ? 'bg-accent text-white shadow-xl shadow-accent/20' : 'bg-[#fcfaf2] text-muted-foreground group-hover:bg-accent/10 group-hover:text-accent transition-all duration-500 border border-black/5'}`}>
+                                                            {getLabelIcon(addr.label)}
                                                         </div>
-                                                        <div className="flex gap-2">
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    handleEdit(addr);
-                                                                }}
-                                                                className="p-2 hover:bg-accent/5 text-muted-foreground/40 hover:text-accent rounded-lg transition-all"
-                                                            >
-                                                                <Edit2 className="w-3.5 h-3.5" />
-                                                            </button>
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    handleDelete(addr._id);
-                                                                }}
-                                                                disabled={actionLoading === addr._id}
-                                                                className="p-2 hover:bg-destructive/5 text-muted-foreground/40 hover:text-destructive rounded-lg transition-all"
-                                                            >
-                                                                {actionLoading === addr._id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
-                                                            </button>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="space-y-4">
                                                         <div>
-                                                            <h4 className="font-bold text-primary group-hover:text-accent transition-colors">{addr.fullName}</h4>
-                                                            <p className="text-sm text-foreground/70 leading-relaxed mt-1 font-medium">{addr.address}</p>
-                                                        </div>
-
-                                                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground font-medium">
-                                                            <div className="flex items-center gap-2 px-3 py-1 bg-muted/50 rounded-lg">
-                                                                <MapPin className="w-3 h-3 opacity-40" />
-                                                                {addr.city}, {addr.region}
-                                                            </div>
-                                                            <div className="flex items-center gap-2 px-3 py-1 bg-muted/50 rounded-lg">
-                                                                <Phone className="w-3 h-3 opacity-40" />
-                                                                {addr.phone}
-                                                            </div>
+                                                            <span className="font-black text-[10px] uppercase tracking-[0.2em] block text-muted-foreground">{addr.label}</span>
+                                                            {addr.isDefault && (
+                                                                <span className="text-[9px] font-black text-accent uppercase tracking-tighter italic">Primary Choice</span>
+                                                            )}
                                                         </div>
                                                     </div>
-
-                                                    {onSelectAddress && (
+                                                    <div className="flex gap-2">
                                                         <button
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
-                                                                onSelectAddress(addr);
-                                                                onClose();
+                                                                handleEdit(addr);
                                                             }}
-                                                            className="w-full mt-6 py-3 bg-muted group-hover:bg-accent text-muted-foreground group-hover:text-white rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all duration-500 flex items-center justify-center gap-2"
+                                                            className="w-10 h-10 flex items-center justify-center bg-[#fcfaf2] hover:bg-white text-muted-foreground/40 hover:text-accent rounded-full transition-all border border-black/5"
                                                         >
-                                                            Select Destination <Check className="w-3 h-3" />
+                                                            <Edit2 className="w-4 h-4" />
                                                         </button>
-                                                    )}
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleDelete(addr._id);
+                                                            }}
+                                                            disabled={actionLoading === addr._id}
+                                                            className="w-10 h-10 flex items-center justify-center bg-[#fcfaf2] hover:bg-white text-muted-foreground/40 hover:text-destructive rounded-full transition-all border border-black/5"
+                                                        >
+                                                            {actionLoading === addr._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                                                        </button>
+                                                    </div>
                                                 </div>
+
+                                                <div className="space-y-6">
+                                                    <div>
+                                                        <h4 className="text-lg font-black italic tracking-tighter text-primary group-hover:text-accent transition-colors uppercase leading-none">{addr.fullName}</h4>
+                                                        <p className="text-sm text-foreground/60 leading-relaxed mt-2 font-bold line-clamp-2 uppercase tracking-tight">{addr.address}</p>
+                                                    </div>
+
+                                                    <div className="flex flex-wrap items-center gap-3">
+                                                        <div className="flex items-center gap-2 px-4 py-2 bg-[#fcfaf2] rounded-full border border-black/5 text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+                                                            <MapPin className="w-3 h-3 text-accent" />
+                                                            {addr.city}
+                                                        </div>
+                                                        <div className="flex items-center gap-2 px-4 py-2 bg-[#fcfaf2] rounded-full border border-black/5 text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+                                                            <Phone className="w-3 h-3 text-accent" />
+                                                            {addr.phone}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {onSelectAddress && (
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            onSelectAddress(addr);
+                                                            onClose();
+                                                        }}
+                                                        className="w-full mt-8 py-5 bg-[#0a0a0a] text-white rounded-[1.5rem] text-[10px] font-black uppercase tracking-[0.3em] transition-all duration-500 flex items-center justify-center gap-3 hover:bg-accent active:scale-95 shadow-xl"
+                                                    >
+                                                        Select Destination <Check className="w-4 h-4" />
+                                                    </button>
+                                                )}
                                             </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <form onSubmit={handleSubmit} className="space-y-12 animate-in slide-in-from-right-8 duration-700">
+                            <div className="flex justify-between items-center px-4">
+                                <div className="flex items-center gap-5">
+                                    <div className="w-2 h-10 bg-accent rounded-full animate-pulse" />
+                                    <div>
+                                        <h3 className="font-black text-2xl italic tracking-tighter font-serif text-primary uppercase leading-tight">{editingId ? 'Modify Location' : 'New Destination'}</h3>
+                                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] mt-1">Pin your exact delivery point</p>
+                                    </div>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={resetForm}
+                                    className="px-6 py-3 bg-white border border-black/5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-accent hover:border-accent/30 transition-all shadow-sm active:scale-95"
+                                >
+                                    Back to list
+                                </button>
+                            </div>
+
+                            <div className="space-y-10">
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground pl-6">Label Type</label>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        {(['Home', 'Work', 'Other'] as const).map((label) => (
+                                            <button
+                                                key={label}
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, label })}
+                                                className={`py-6 rounded-3xl border-2 font-black text-[10px] uppercase tracking-[0.3em] transition-all duration-500 flex flex-col items-center gap-3 ${formData.label === label
+                                                    ? 'border-accent bg-accent text-white shadow-[0_15px_30px_rgba(255,0,0,0.15)] scale-[1.02]'
+                                                    : 'border-white bg-white hover:border-accent text-muted-foreground shadow-sm'
+                                                    }`}
+                                            >
+                                                <div className={`p-2 rounded-xl ${formData.label === label ? 'bg-white/20' : 'bg-accent/5 transition-colors group-hover:bg-accent/10'}`}>
+                                                    {label === 'Home' && <Home className="w-5 h-5" />}
+                                                    {label === 'Work' && <Briefcase className="w-5 h-5" />}
+                                                    {label === 'Other' && <MapPin className="w-5 h-5" />}
+                                                </div>
+                                                {label}
+                                            </button>
                                         ))}
                                     </div>
-                                )}
-                            </div>
-                        ) : (
-                            <form onSubmit={handleSubmit} className="space-y-8 animate-in slide-in-from-right-4 duration-500">
-                                <div className="flex justify-between items-center px-2">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-1.5 h-8 bg-accent rounded-full" />
-                                        <div>
-                                            <h3 className="font-bold text-xl tracking-tight font-serif text-primary">{editingId ? 'Modify Location' : 'New Destination'}</h3>
-                                            <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Pin your point on the map</p>
-                                        </div>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={resetForm}
-                                        className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition"
-                                    >
-                                        Back to list
-                                    </button>
                                 </div>
 
-                                <div className="space-y-6">
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-[0.15em] text-foreground/70 pl-1">Label</label>
-                                        <div className="flex gap-3">
-                                            {(['Home', 'Work', 'Other'] as const).map((label) => (
-                                                <button
-                                                    key={label}
-                                                    type="button"
-                                                    onClick={() => setFormData({ ...formData, label })}
-                                                    className={`flex-1 py-4 rounded-2xl border-2 font-black text-xs uppercase tracking-widest transition-all duration-500 flex flex-col items-center gap-2 font-outfit ${formData.label === label
-                                                        ? 'border-accent bg-accent text-white shadow-xl shadow-accent/20 scale-[1.02]'
-                                                        : 'border-border bg-muted/30 hover:border-primary text-muted-foreground'
-                                                        }`}
-                                                >
-                                                    {label === 'Home' && <Home className="w-4 h-4" />}
-                                                    {label === 'Work' && <Briefcase className="w-4 h-4" />}
-                                                    {label === 'Other' && <MapPin className="w-4 h-4" />}
-                                                    {label}
-                                                </button>
-                                            ))}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground pl-6">Receiver Name</label>
+                                        <div className="relative group">
+                                            <div className="absolute left-6 top-1/2 -translate-y-1/2 transition-colors duration-300 group-focus-within:text-accent">
+                                                <User className="w-4 h-4 text-muted-foreground/30" />
+                                            </div>
+                                            <input
+                                                type="text"
+                                                required
+                                                value={formData.fullName}
+                                                onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                                                className="w-full pl-16 pr-8 py-5 bg-white border border-black/5 rounded-full outline-none focus:ring-4 focus:ring-accent/5 focus:border-accent transition-all font-bold text-sm text-primary shadow-sm placeholder:text-muted-foreground/30"
+                                                placeholder="Recipient Identity"
+                                            />
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-3">
-                                            <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground pl-1">Receiver Name</label>
-                                            <div className="relative group">
-                                                <div className="absolute left-5 top-1/2 -translate-y-1/2 transition-colors duration-300 group-focus-within:text-accent">
-                                                    <User className="w-4 h-4 text-muted-foreground/40" />
-                                                </div>
-                                                <input
-                                                    type="text"
-                                                    required
-                                                    value={formData.fullName}
-                                                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                                                    className="w-full pl-14 pr-6 py-4.5 bg-muted/30 border border-border/50 rounded-[1.25rem] outline-none focus:ring-4 focus:ring-accent/5 focus:border-accent transition-all font-semibold text-sm text-foreground placeholder:text-muted-foreground/30"
-                                                    placeholder="Name of recipient"
-                                                />
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground pl-6">Building / Street</label>
+                                        <div className="relative group">
+                                            <div className="absolute left-6 top-1/2 -translate-y-1/2 transition-colors duration-300 group-focus-within:text-accent">
+                                                <Navigation className="w-4 h-4 text-muted-foreground/30" />
                                             </div>
-                                        </div>
-
-                                        <div className="space-y-3">
-                                            <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground pl-1">Building/Street</label>
-                                            <div className="relative group">
-                                                <div className="absolute left-5 top-1/2 -translate-y-1/2 transition-colors duration-300 group-focus-within:text-accent">
-                                                    <MapPin className="w-4 h-4 text-muted-foreground/40" />
-                                                </div>
-                                                <input
-                                                    type="text"
-                                                    required
-                                                    value={formData.address}
-                                                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                                                    className="w-full pl-14 pr-6 py-4.5 bg-muted/30 border border-border/50 rounded-[1.25rem] outline-none focus:ring-4 focus:ring-accent/5 focus:border-accent transition-all font-semibold text-sm text-foreground placeholder:text-muted-foreground/30"
-                                                    placeholder="House no, Street name"
-                                                />
-                                            </div>
+                                            <input
+                                                type="text"
+                                                required
+                                                value={formData.address}
+                                                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                                className="w-full pl-16 pr-8 py-5 bg-white border border-black/5 rounded-full outline-none focus:ring-4 focus:ring-accent/5 focus:border-accent transition-all font-bold text-sm text-primary shadow-sm placeholder:text-muted-foreground/30"
+                                                placeholder="House no, Tower, Street"
+                                            />
                                         </div>
                                     </div>
+                                </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase tracking-[0.15em] text-foreground/70 pl-1">City</label>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground pl-6">City Point</label>
+                                        <div className="relative group">
+                                            <div className="absolute left-6 top-1/2 -translate-y-1/2 transition-colors duration-300 group-focus-within:text-accent">
+                                                <MapIcon className="w-4 h-4 text-muted-foreground/30" />
+                                            </div>
                                             <input
                                                 type="text"
                                                 required
                                                 value={formData.city}
                                                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                                                className="w-full px-5 py-4 bg-muted border border-border rounded-2xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-bold text-sm text-foreground placeholder:text-foreground/30"
+                                                className="w-full pl-16 pr-8 py-5 bg-white border border-black/5 rounded-full outline-none focus:ring-4 focus:ring-accent/5 focus:border-accent transition-all font-bold text-sm text-primary shadow-sm placeholder:text-muted-foreground/30"
                                                 placeholder="e.g. Kathmandu"
                                             />
                                         </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase tracking-[0.15em] text-foreground/70 pl-1">Zone / Region</label>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground pl-6">Region / Area</label>
+                                        <div className="relative group">
+                                            <div className="absolute left-6 top-1/2 -translate-y-1/2 transition-colors duration-300 group-focus-within:text-accent pointer-events-none z-10">
+                                                <MapPin className="w-4 h-4 text-muted-foreground/30" />
+                                            </div>
                                             <select
                                                 value={formData.region}
                                                 onChange={(e) => setFormData({ ...formData, region: e.target.value as any })}
-                                                className="w-full px-5 py-4 bg-muted border border-border rounded-2xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-bold text-sm appearance-none text-foreground"
+                                                className="w-full pl-16 pr-8 py-5 bg-white border border-black/5 rounded-full outline-none focus:ring-4 focus:ring-accent/5 focus:border-accent transition-all font-bold text-sm appearance-none text-primary shadow-sm"
                                             >
                                                 <option value="Kathmandu Valley">Kathmandu Valley</option>
                                                 <option value="Outside Valley">Outside Valley</option>
                                             </select>
                                         </div>
                                     </div>
+                                </div>
 
-                                    <label className="flex items-center gap-3 cursor-pointer group w-fit">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground pl-6">Contact Number</label>
+                                        <div className="relative group">
+                                            <div className="absolute left-6 top-1/2 -translate-y-1/2 transition-colors duration-300 group-focus-within:text-accent">
+                                                <Phone className="w-4 h-4 text-muted-foreground/30" />
+                                            </div>
+                                            <input
+                                                type="tel"
+                                                required
+                                                value={formData.phone}
+                                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                                className="w-full pl-16 pr-8 py-5 bg-white border border-black/5 rounded-full outline-none focus:ring-4 focus:ring-accent/5 focus:border-accent transition-all font-bold text-sm text-primary shadow-sm placeholder:text-muted-foreground/30"
+                                                placeholder="Phone reachable"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <label className="flex items-center gap-4 cursor-pointer group bg-white p-5 rounded-full border border-black/5 shadow-sm hover:border-accent/30 transition-all w-fit mt-6 md:mt-10">
                                         <div className="relative">
                                             <input
                                                 type="checkbox"
@@ -379,33 +408,33 @@ export default function AddressBookModal({ isOpen, onClose, onSelectAddress }: A
                                                 onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
                                                 className="sr-only"
                                             />
-                                            <div className={`w-12 h-6 rounded-full transition-all duration-500 ${formData.isDefault ? 'bg-primary shadow-lg shadow-primary/30' : 'bg-muted border border-border'}`} />
-                                            <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-all duration-500 shadow-sm ${formData.isDefault ? 'translate-x-6' : 'translate-x-0'}`} />
+                                            <div className={`w-14 h-8 rounded-full transition-all duration-500 ${formData.isDefault ? 'bg-accent shadow-lg shadow-accent/20' : 'bg-[#fcfaf2] border border-black/5'}`} />
+                                            <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all duration-500 shadow-xl ${formData.isDefault ? 'translate-x-6' : 'translate-x-0'}`} />
                                         </div>
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-foreground/50 group-hover:text-primary transition-colors">Set as favorite point</span>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground group-hover:text-primary transition-colors">Mark as Primary Choice</span>
                                     </label>
                                 </div>
+                            </div>
 
-                                <button
-                                    type="submit"
-                                    disabled={actionLoading === 'saving'}
-                                    className="w-full py-5 bg-primary text-white font-bold rounded-2xl uppercase tracking-[0.2em] hover:bg-accent hover:shadow-2xl hover:shadow-accent/20 transition-all duration-500 disabled:opacity-50 active:scale-[0.98] flex items-center justify-center gap-3 relative overflow-hidden group font-outfit mt-4 shadow-xl shadow-primary/10"
-                                >
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-shimmer" />
-                                    {actionLoading === 'saving' ? (
-                                        <Loader2 className="w-5 h-5 animate-spin" />
-                                    ) : (
-                                        <>
-                                            <span>Commit Destination</span>
-                                            <div className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center transition-colors group-hover:bg-white/20">
-                                                <Sparkles className="w-3 h-3 text-accent group-hover:text-white" />
-                                            </div>
-                                        </>
-                                    )}
-                                </button>
-                            </form>
-                        )}
-                    </DialogDescription>
+                            <button
+                                type="submit"
+                                disabled={actionLoading === 'saving'}
+                                className="w-full py-6 bg-primary text-white font-black rounded-[2rem] uppercase tracking-[0.3em] text-xs hover:bg-accent hover:shadow-[0_20px_40px_rgba(255,0,0,0.15)] transition-all duration-500 disabled:opacity-50 active:scale-[0.98] flex items-center justify-center gap-4 relative overflow-hidden group shadow-xl shadow-primary/10 mt-6"
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-shimmer" />
+                                {actionLoading === 'saving' ? (
+                                    <Loader2 className="w-6 h-6 animate-spin" />
+                                ) : (
+                                    <>
+                                        <span>Commit Destination</span>
+                                        <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center transition-colors group-hover:bg-white/20">
+                                            <Sparkles className="w-5 h-5 text-accent" />
+                                        </div>
+                                    </>
+                                )}
+                            </button>
+                        </form>
+                    )}
                 </div>
             </DialogContent>
             <style jsx global>{`
@@ -416,11 +445,11 @@ export default function AddressBookModal({ isOpen, onClose, onSelectAddress }: A
                     background: transparent;
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: rgba(var(--primary), 0.1);
+                    background: rgba(0, 0, 0, 0.05);
                     border-radius: 10px;
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: rgba(var(--primary), 0.3);
+                    background: rgba(139, 0, 0, 0.2);
                 }
             `}</style>
         </Dialog >

@@ -135,8 +135,8 @@ export default function CheckoutPage() {
         <div className="min-h-screen bg-background">
             <Navbar />
 
-            <main className="max-w-7xl mx-auto px-4 py-24">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+            <main className="max-w-[1440px] mx-auto px-6 py-24">
+                <div className="grid grid-cols-1 lg:grid-cols-[1fr_450px] gap-16">
                     {/* Form */}
                     <div className="space-y-12">
                         <h1 className="text-4xl font-bold tracking-tighter uppercase">CHECKOUT</h1>
