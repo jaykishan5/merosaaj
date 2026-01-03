@@ -124,23 +124,23 @@ export default function ProfileSettingsModal({ isOpen, onClose, onUpdate }: Prof
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-w-[480px] w-[95vw] px-0 py-0 overflow-hidden bg-[#fcfaf2] border-none shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] rounded-[2.5rem]">
-                <DialogHeader className="bg-[#fcfaf2] border-b border-black/5 px-8 py-8">
-                    <div className="flex items-center gap-5">
-                        <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-xl shadow-black/5 border border-white transform -rotate-3 hover:rotate-0 transition-transform duration-500">
-                            <Sparkles className="w-6 h-6 text-accent animate-pulse" />
+            <DialogContent className="max-w-[480px] w-full sm:w-[95vw] px-0 py-0 overflow-hidden bg-[#fcfaf2] border-none shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] rounded-t-[2rem] sm:rounded-[2.5rem] bottom-0 sm:bottom-auto translate-y-0 sm:-translate-y-1/2">
+                <DialogHeader className="bg-[#fcfaf2] border-b border-black/5 px-6 sm:px-8 py-6 sm:py-8">
+                    <div className="flex items-center gap-4 sm:gap-5">
+                        <div className="w-10 h-10 sm:w-14 sm:h-14 bg-white rounded-xl sm:rounded-2xl flex items-center justify-center shadow-xl shadow-black/5 border border-white transform -rotate-3 hover:rotate-0 transition-transform duration-500">
+                            <Sparkles className="w-4 h-4 sm:w-6 sm:h-6 text-accent animate-pulse" />
                         </div>
-                        <div className="flex-1">
-                            <DialogTitle className="text-2xl font-black italic tracking-tighter font-serif text-primary uppercase leading-tight">Identity Vault</DialogTitle>
-                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mt-1">Update your digital identity</p>
+                        <div className="flex-1 text-left">
+                            <DialogTitle className="text-lg sm:text-2xl font-black italic tracking-tighter font-serif text-primary uppercase leading-tight">Identity Vault</DialogTitle>
+                            <p className="text-[8px] sm:text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mt-0.5 sm:mt-1">Update your digital identity</p>
                         </div>
                         <button onClick={onClose} className="p-2 hover:bg-black/5 rounded-full transition-all">
-                            <X className="w-5 h-5 text-muted-foreground" />
+                            <X className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
                         </button>
                     </div>
                 </DialogHeader>
 
-                <div className="px-10 py-10">
+                <div className="px-6 sm:px-10 py-8 sm:py-10 max-h-[80vh] overflow-y-auto overflow-x-hidden scrollbar-none">
                     {fetching ? (
                         <div className="flex flex-col items-center py-24">
                             <div className="relative">
@@ -164,7 +164,7 @@ export default function ProfileSettingsModal({ isOpen, onClose, onUpdate }: Prof
                                     className="relative group cursor-pointer"
                                     onClick={() => fileInputRef.current?.click()}
                                 >
-                                    <div className="w-44 h-44 rounded-[4rem] border-[12px] border-white overflow-hidden relative transition-all duration-700 group-hover:scale-[1.02] group-hover:rounded-[3.5rem] shadow-[0_30px_60px_-12px_rgba(0,0,0,0.15)] bg-white">
+                                    <div className="w-32 h-32 sm:w-44 sm:h-44 rounded-[2.5rem] sm:rounded-[4rem] border-[8px] sm:border-[12px] border-white overflow-hidden relative transition-all duration-700 group-hover:scale-[1.02] group-hover:rounded-[2rem] sm:group-hover:rounded-[3.5rem] shadow-[0_20px_40px_-12px_rgba(0,0,0,0.15)] bg-white">
                                         {isUploading ? (
                                             <div className="absolute inset-0 z-20 bg-white/80 flex items-center justify-center backdrop-blur-md">
                                                 <Loader2 className="w-10 h-10 text-accent animate-spin" />
@@ -195,8 +195,8 @@ export default function ProfileSettingsModal({ isOpen, onClose, onUpdate }: Prof
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="absolute -bottom-2 -right-2 bg-gradient-to-br from-accent to-red-800 text-white p-4 rounded-2xl shadow-[0_10px_30px_rgba(139,0,0,0.4)] border-4 border-white z-10 transition-all duration-500 group-hover:scale-110 group-hover:rotate-12 group-hover:shadow-[0_15px_40px_rgba(139,0,0,0.5)]">
-                                        <Camera className="w-5 h-5" />
+                                    <div className="absolute -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 bg-gradient-to-br from-accent to-red-800 text-white p-3 sm:p-4 rounded-xl sm:rounded-2xl shadow-[0_10px_30px_rgba(139,0,0,0.4)] border-[3px] sm:border-4 border-white z-10 transition-all duration-500 group-hover:scale-110 group-hover:rotate-12">
+                                        <Camera className="w-4 h-4 sm:w-5 sm:h-5" />
                                     </div>
                                 </div>
                                 <p className="mt-6 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Click photo to update</p>
@@ -204,10 +204,10 @@ export default function ProfileSettingsModal({ isOpen, onClose, onUpdate }: Prof
 
                             <div className="grid grid-cols-1 gap-8">
                                 <div className="space-y-4">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground pl-4">Display Name</label>
+                                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground px-4">Display Name</label>
                                     <div className="relative group">
                                         <div className="absolute left-6 top-1/2 -translate-y-1/2 transition-colors duration-300 group-focus-within:text-accent">
-                                            <User className="w-4 h-4 text-muted-foreground/30" />
+                                            <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground/30" />
                                         </div>
                                         <input
                                             type="text"
@@ -221,10 +221,10 @@ export default function ProfileSettingsModal({ isOpen, onClose, onUpdate }: Prof
                                 </div>
 
                                 <div className="space-y-4">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground pl-4">Phone Number</label>
+                                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground px-4">Phone Number</label>
                                     <div className="relative group">
                                         <div className="absolute left-6 top-1/2 -translate-y-1/2 transition-colors duration-300 group-focus-within:text-accent">
-                                            <Phone className="w-4 h-4 text-muted-foreground/30" />
+                                            <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground/30" />
                                         </div>
                                         <input
                                             type="tel"
