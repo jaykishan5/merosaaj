@@ -132,7 +132,7 @@ export default function ProductDetailsPage() {
         <div className="min-h-screen bg-muted/40">
             <Navbar />
 
-            <main className="max-w-[1440px] mx-auto px-6 pt-32 pb-20">
+            <main className="max-w-[1440px] mx-auto px-4 md:px-6 pt-32 pb-20">
                 <Breadcrumbs />
                 <div className="flex flex-col lg:flex-row gap-4 font-sans">
 

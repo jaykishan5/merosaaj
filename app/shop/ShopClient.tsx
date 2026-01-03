@@ -81,7 +81,7 @@ export default function ShopPage() {
         <div className="min-h-screen bg-background">
             <Navbar />
 
-            <main className="max-w-[1440px] mx-auto px-6 pt-32 md:pt-48 pb-24">
+            <main className="max-w-[1440px] mx-auto px-4 md:px-6 pt-32 pb-20">
                 <Breadcrumbs />
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 space-y-4 md:space-y-0">

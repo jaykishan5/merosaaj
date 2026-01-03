@@ -35,7 +35,7 @@ export default async function Home() {
             <Hero />
 
             <section className="py-8 md:py-12 bg-white border-b border-gray-50 relative z-30">
-                <div className="max-w-[1440px] mx-auto px-6 overflow-visible">
+                <div className="max-w-[1440px] mx-auto px-4 md:px-6 overflow-visible">
                     <div className="flex gap-6 md:gap-12 md:justify-center overflow-x-auto pt-4 pb-4 scrollbar-none snap-x snap-proximity">
                         {categories.map((cat) => (
                             <Link
@@ -63,7 +63,7 @@ export default async function Home() {
             </section>
 
             <section className="py-16 md:py-24 overflow-hidden">
-                <div className="max-w-[1440px] mx-auto px-6 mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 md:gap-0">
+                <div className="max-w-[1440px] mx-auto px-4 md:px-6 mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 md:gap-0">
                     <div className="space-y-2">
                         <div className="flex items-center gap-3 text-accent animate-pulse">
                             <Sparkles className="w-4 h-4 fill-accent" />
@@ -77,7 +77,7 @@ export default async function Home() {
                     </Link>
                 </div>
 
-                <div className="px-6 max-w-[1440px] mx-auto">
+                <div className="px-4 md:px-6 max-w-[1440px] mx-auto">
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8 overflow-visible">
                         {products.length > 0 ? (
                             products.map((product: any) => (
@@ -94,7 +94,7 @@ export default async function Home() {
 
             {/* Categories Bricks (Large Visuals) */}
             <section className="py-24 bg-primary text-white">
-                <div className="max-w-[1440px] mx-auto px-6">
+                <div className="max-w-[1440px] mx-auto px-4 md:px-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2 relative h-[400px] md:h-[500px] rounded-[2rem] md:rounded-[3rem] overflow-hidden group cursor-pointer shadow-2xl">
                             <Image
