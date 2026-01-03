@@ -73,7 +73,7 @@ export default function Hero() {
                                 initial={{ y: 30, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{ delay: 0.4 }}
-                                className="text-4xl sm:text-6xl md:text-9xl font-black tracking-tighter text-white mb-8 leading-none italic"
+                                className="text-3xl sm:text-6xl md:text-9xl font-black tracking-tighter text-white mb-6 md:mb-8 leading-none italic"
                             >
                                 {slides[currentSlide].title.split(" ").map((word, i) => (
                                     <span key={i} className={i === 1 ? "text-accent block md:inline" : ""}>
@@ -95,7 +95,7 @@ export default function Hero() {
                                 initial={{ scale: 0.9, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
                                 transition={{ delay: 0.8 }}
-                                className="flex flex-col sm:flex-row items-center justify-center gap-4 px-4"
+                                className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-4 pb-12 sm:pb-0"
                             >
                                 <Link
                                     href="/shop"

@@ -81,7 +81,7 @@ export default function ShopPage() {
         <div className="min-h-screen bg-background">
             <Navbar />
 
-            <main className="max-w-[1440px] mx-auto px-4 md:px-6 pt-32 pb-20">
+            <main className="max-w-[1440px] mx-auto px-4 md:px-6 pt-24 md:pt-32 pb-20">
                 <Breadcrumbs />
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 space-y-4 md:space-y-0">
@@ -251,7 +251,7 @@ export default function ShopPage() {
                             transition={{ type: "spring", damping: 25, stiffness: 200 }}
                             className="fixed right-0 top-0 bottom-0 w-[85%] max-w-sm bg-background z-[80] lg:hidden shadow-2xl overflow-y-auto"
                         >
-                            <div className="p-8 space-y-10">
+                            <div className="p-8 space-y-10 pb-32">
                                 <div className="flex justify-between items-center border-b border-border pb-6">
                                     <h2 className="text-xl font-black italic tracking-tighter">FILTERS</h2>
                                     <button onClick={() => setShowFilters(false)} className="p-2 hover:bg-muted rounded-full transition-colors">

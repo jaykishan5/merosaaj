@@ -59,7 +59,7 @@ export default function Navbar() {
                     </div>
 
                     {/* Icons */}
-                    <div className="flex items-center space-x-1 sm:space-x-4">
+                    <div className="flex items-center gap-3 sm:gap-4">
                         <button
                             onClick={() => setIsSearchOpen(true)}
                             className="md:hidden p-2 hover:bg-white/10 rounded-full transition-colors text-primary-foreground/70 hover:text-white"
@@ -231,9 +231,9 @@ export default function Navbar() {
                                                 onClick={() => setIsMobileMenuOpen(false)}
                                                 className="flex items-center justify-between py-6 group"
                                             >
-                                                <span className="text-4xl font-black text-accent group-active:text-white transition-colors italic tracking-tighter uppercase relative">
+                                                <span className="text-4xl font-black text-white group-active:text-accent transition-colors italic tracking-tighter uppercase relative">
                                                     Shop All
-                                                    <span className="absolute -bottom-1 left-0 w-12 h-1 bg-accent rounded-full transition-all group-hover:w-full"></span>
+                                                    <span className="absolute -bottom-1 left-0 w-12 h-1 bg-white rounded-full transition-all group-hover:w-full"></span>
                                                 </span>
                                             </Link>
                                         </motion.div>

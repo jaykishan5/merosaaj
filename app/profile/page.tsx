@@ -75,7 +75,7 @@ export default function ProfilePage() {
     }
 
     return (
-        <main className="min-h-screen bg-background text-foreground pt-32 md:pt-48 pb-12">
+        <main className="min-h-screen bg-background text-foreground pt-24 md:pt-48 pb-12">
             <Navbar />
             <div className="max-w-6xl mx-auto px-4 md:px-6">
                 <div className="flex flex-col md:flex-row gap-12">

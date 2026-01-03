@@ -29,6 +29,7 @@ export default function ProductCard({ product, width = "w-full md:w-[320px]", pr
     const isWishlisted = isInWishlist(product._id);
 
     const [showQuickView, setShowQuickView] = useState(false);
+    const [imgSrc, setImgSrc] = useState<string | null>(null);
 
     return (
         <>
@@ -36,11 +37,12 @@ export default function ProductCard({ product, width = "w-full md:w-[320px]", pr
                 <div className="relative aspect-[4/5] overflow-hidden bg-muted rounded-2xl md:rounded-[2rem] mb-4 md:mb-6 shadow-xl shadow-primary/5">
                     <Link href={`/product/${product.slug}`}>
                         <Image
-                            src={product.images[0] || "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?auto=format&fit=crop&q=80"}
+                            src={imgSrc || product.images[0] || "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?auto=format&fit=crop&q=80"}
                             alt={product.name}
                             fill
                             priority={priority}
                             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                            onError={() => setImgSrc("https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?auto=format&fit=crop&q=80")}
                             className="object-cover transition-transform duration-700 group-hover:scale-110"
                         />
                     </Link>
