@@ -13,7 +13,7 @@ export async function POST(req: Request) {
         }
 
         await dbConnect();
-        const { productId, rating, comment } = await req.json();
+        const { productId, rating, comment, images } = await req.json();
 
         if (!productId || !rating || !comment) {
             return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
@@ -27,6 +27,7 @@ export async function POST(req: Request) {
             },
             rating,
             comment,
+            images: images || [],
         });
 
         return NextResponse.json(review, { status: 201 });

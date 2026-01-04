@@ -17,6 +17,10 @@ export interface IProduct extends Document {
     images: string[];
     variants: IVariant[];
     isFeatured: boolean;
+    allowPreOrder: boolean;
+    releaseDate?: Date;
+    soldCount: number;
+    isBestseller: boolean;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -39,6 +43,10 @@ const ProductSchema = new Schema<IProduct>(
         images: [{ type: String }],
         variants: [VariantSchema],
         isFeatured: { type: Boolean, default: false },
+        allowPreOrder: { type: Boolean, default: false },
+        releaseDate: { type: Date },
+        soldCount: { type: Number, default: 0 },
+        isBestseller: { type: Boolean, default: false },
     },
     { timestamps: true }
 );

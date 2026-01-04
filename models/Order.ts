@@ -37,6 +37,8 @@ export interface IOrder extends Document {
     isDelivered: boolean;
     deliveredAt?: Date;
     status: 'Pending' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
+    couponCode?: string;
+    couponDiscount?: number;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -52,7 +54,7 @@ const OrderSchema = new Schema<IOrder>(
                 price: { type: Number, required: true },
                 product: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
                 size: { type: String, required: true },
-                color: { type: String, required: true },
+                color: { type: String, default: 'Default' },
             },
         ],
         shippingAddress: {
@@ -82,6 +84,8 @@ const OrderSchema = new Schema<IOrder>(
             default: 'Pending',
             enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
         },
+        couponCode: { type: String },
+        couponDiscount: { type: Number, default: 0.0 },
     },
     { timestamps: true }
 );

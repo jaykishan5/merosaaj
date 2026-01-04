@@ -171,7 +171,14 @@ export async function GET(req: Request) {
                 filter.gender = gender;
             }
         }
-        if (search) filter.name = { $regex: search, $options: "i" };
+        if (search) {
+            const searchRegex = { $regex: search, $options: "i" };
+            filter.$or = [
+                { name: searchRegex },
+                { description: searchRegex },
+                { category: searchRegex }
+            ];
+        }
 
         if (minPrice || maxPrice) {
             filter.price = {};
@@ -183,6 +190,11 @@ export async function GET(req: Request) {
             filter["variants.color"] = color;
         }
 
+        const size = searchParams.get("size");
+        if (size && size !== "all") {
+            filter["variants.size"] = size;
+        }
+
         const sortParam = searchParams.get("sort");
         let sortQuery: any = { createdAt: -1 }; // Default to newest
 
@@ -190,6 +202,13 @@ export async function GET(req: Request) {
             sortQuery = { price: 1 };
         } else if (sortParam === "price_desc") {
             sortQuery = { price: -1 };
+        } else if (sortParam === "popularity") {
+            sortQuery = { soldCount: -1 };
+        } else if (sortParam === "discount") {
+            // Calculated sort isn't natively efficient in Mongo without aggregation, 
+            // but we can sort by discountPrice existence or use a simple logic.
+            // For now, let's sort by items that HAVE a discountPrice first.
+            sortQuery = { discountPrice: 1 };
         } else if (sortParam === "oldest") {
             sortQuery = { createdAt: 1 };
         }

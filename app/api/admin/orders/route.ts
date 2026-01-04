@@ -5,6 +5,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongodb";
 import Order from "@/models/Order";
+import { sendEmail } from "@/lib/email";
+import { getShippingUpdateTemplate } from "@/lib/email-templates";
 
 export async function GET(req: Request) {
     try {
@@ -32,12 +34,13 @@ export async function PUT(req: Request) {
         const { orderId, status, isPaid, isDelivered } = await req.json();
 
         await dbConnect();
-        const order = await Order.findById(orderId);
+        const order = await Order.findById(orderId).populate('user', 'name email');
 
         if (!order) {
             return NextResponse.json({ message: "Order not found" }, { status: 404 });
         }
 
+        const oldStatus = order.status;
         if (status) order.status = status;
         if (isPaid !== undefined) {
             order.isPaid = isPaid;
@@ -49,6 +52,16 @@ export async function PUT(req: Request) {
         }
 
         await order.save();
+
+        // Send Email if status changed
+        if (status && status !== oldStatus && order.user?.email) {
+            await sendEmail({
+                to: order.user.email,
+                subject: `Order ${status} - MeroSaaj`,
+                html: getShippingUpdateTemplate(order),
+            });
+        }
+
         return NextResponse.json({ message: "Order updated successfully", order });
     } catch (error: any) {
         return NextResponse.json({ message: error.message }, { status: 500 });

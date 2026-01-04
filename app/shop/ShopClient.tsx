@@ -30,6 +30,8 @@ export default function ShopPage() {
     const [minPrice, setMinPrice] = useState("");
     const [maxPrice, setMaxPrice] = useState("");
     const [selectedColor, setSelectedColor] = useState("all");
+    const [selectedSize, setSelectedSize] = useState("all");
+    const [sortBy, setSortBy] = useState("newest");
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -41,7 +43,9 @@ export default function ShopPage() {
                     search,
                     minPrice,
                     maxPrice,
-                    color: selectedColor
+                    color: selectedColor,
+                    size: selectedSize,
+                    sort: sortBy
                 });
                 const res = await fetch(`/api/products?${queryParams.toString()}`);
                 const data = await res.json();
@@ -57,7 +61,7 @@ export default function ShopPage() {
             fetchProducts();
         }, 500);
         return () => clearTimeout(timer);
-    }, [categoryParam, genderParam, search, minPrice, maxPrice, selectedColor]);
+    }, [categoryParam, genderParam, search, minPrice, maxPrice, selectedColor, selectedSize, sortBy]);
 
 
     const handleFilterChange = (type: 'category' | 'gender', value: string) => {
@@ -92,13 +96,24 @@ export default function ShopPage() {
                         <p className="text-muted-foreground mt-2">Curated streetwear for the modern nomad.</p>
                     </div>
 
-                    <div className="flex items-center space-x-4 w-full md:w-auto">
+                    <div className="flex flex-wrap items-center gap-4 w-full md:w-auto">
+                        <select
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                            className="bg-muted border border-border rounded-full px-4 py-2 text-xs font-bold outline-none focus:ring-2 focus:ring-primary cursor-pointer appearance-none"
+                        >
+                            <option value="newest">Newest First</option>
+                            <option value="popularity">Popularity</option>
+                            <option value="price_asc">Price: Low to High</option>
+                            <option value="price_desc">Price: High to Low</option>
+                            <option value="discount">Highest Discount</option>
+                        </select>
                         <div className="relative flex-grow md:flex-grow-0">
                             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                             <input
                                 type="text"
                                 placeholder="Search..."
-                                className="pl-10 pr-4 py-2 bg-muted border border-border rounded-full outline-none focus:ring-2 focus:ring-primary w-full md:w-64 text-sm"
+                                className="pl-10 pr-4 py-2 bg-muted border border-border rounded-full outline-none focus:ring-2 focus:ring-primary w-full md:w-64 text-sm font-medium"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                             />
@@ -176,8 +191,25 @@ export default function ShopPage() {
                                             }`}
                                         style={{ backgroundColor: color.toLowerCase() }}
                                         title={color}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Size Filter */}
+                        <div>
+                            <h3 className="text-xs font-black tracking-widest uppercase text-muted-foreground mb-6 border-b border-border pb-2">Sizes</h3>
+                            <div className="flex flex-wrap gap-2">
+                                {["S", "M", "L", "XL", "28", "30", "32", "34", "One Size"].map((size) => (
+                                    <button
+                                        key={size}
+                                        onClick={() => setSelectedSize(selectedSize === size ? "all" : size)}
+                                        className={`min-w-[40px] h-10 border rounded-xl text-[10px] font-black transition-all ${selectedSize === size
+                                            ? "border-primary bg-primary text-white shadow-lg shadow-primary/20"
+                                            : "border-border hover:border-primary/30 text-muted-foreground hover:text-primary"
+                                            }`}
                                     >
-                                        {/* Tooltip or simple visual */}
+                                        {size}
                                     </button>
                                 ))}
                             </div>

@@ -11,6 +11,7 @@ import {
     Settings,
     LogOut,
     ExternalLink,
+    Tag,
     ChevronLeft,
     ChevronRight
 } from "lucide-react";
@@ -39,7 +40,9 @@ export default function AdminSidebar({
         { name: "Overview", href: "/admin", icon: LayoutDashboard },
         { name: "Orders", href: "/admin/orders", icon: ShoppingBag },
         { name: "Products", href: "/admin/products", icon: Package },
+        { name: "Inventory", href: "/admin/inventory", icon: ShoppingBag },
         { name: "Users", href: "/admin/users", icon: Users },
+        { name: "Coupons", href: "/admin/coupons", icon: Tag },
     ];
 
     return (

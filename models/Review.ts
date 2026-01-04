@@ -8,6 +8,7 @@ export interface IReview extends Document {
     };
     rating: number; // 1-5
     comment: string;
+    images?: string[]; // New field for user photos
     createdAt: Date;
     updatedAt: Date;
 }
@@ -21,6 +22,7 @@ const ReviewSchema = new Schema<IReview>(
         },
         rating: { type: Number, required: true, min: 1, max: 5 },
         comment: { type: String, required: true },
+        images: [{ type: String }],
     },
     { timestamps: true }
 );

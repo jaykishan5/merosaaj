@@ -7,6 +7,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import Image from "next/image";
+import SocialLoginButtons from "@/components/SocialLoginButtons";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
@@ -171,6 +172,8 @@ export default function LoginPage() {
                             </button>
                         </div>
                     </form>
+
+                    <SocialLoginButtons />
 
                     <p className="mt-8 text-center text-sm text-primary/70 lg:text-muted-foreground">
                         Don't have an account yet?{" "}

@@ -5,11 +5,10 @@ import Navbar from "@/components/Navbar";
 import { useCart } from "@/lib/store";
 import { formatPrice } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import { ChevronRight, Truck, CreditCard, Banknote, ShoppingBag } from "lucide-react";
+import { ChevronRight, Truck, CreditCard, Banknote, ShoppingBag, MapPin } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import AddressBookModal from "@/components/AddressBookModal";
-import { MapPin } from "lucide-react";
 
 export default function CheckoutPage() {
     const { data: session } = useSession();
@@ -28,6 +27,50 @@ export default function CheckoutPage() {
     const [loading, setLoading] = useState(false);
     const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
 
+    // Coupon related state
+    const [couponCode, setCouponCode] = useState("");
+    const [couponLoading, setCouponLoading] = useState(false);
+    const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+    const [couponError, setCouponError] = useState("");
+
+    const handleApplyCoupon = async () => {
+        if (!couponCode) return;
+
+        setCouponLoading(true);
+        setCouponError("");
+
+        try {
+            const res = await fetch("/api/coupons/validate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ code: couponCode, amount: totalPrice() }),
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                setAppliedCoupon(data.coupon);
+                setCouponError("");
+            } else {
+                setCouponError(data.message);
+                setAppliedCoupon(null);
+            }
+        } catch (err) {
+            setCouponError("Failed to apply coupon");
+            setAppliedCoupon(null);
+        } finally {
+            setCouponLoading(false);
+        }
+    };
+
+    const calculateDiscount = () => {
+        if (!appliedCoupon) return 0;
+        if (appliedCoupon.discountType === 'percentage') {
+            return (totalPrice() * appliedCoupon.discountValue) / 100;
+        }
+        return appliedCoupon.discountValue;
+    };
+
     const handleSelectAddress = (address: any) => {
         setShippingInfo({
             fullName: address.fullName,
@@ -39,8 +82,9 @@ export default function CheckoutPage() {
         setIsAddressModalOpen(false);
     };
 
+    const discountAmount = calculateDiscount();
     const shippingPrice = 100;
-    const finalTotal = totalPrice() + shippingPrice;
+    const finalTotal = totalPrice() + shippingPrice - discountAmount;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -58,6 +102,7 @@ export default function CheckoutPage() {
                 paymentMethod,
                 itemsPrice: totalPrice(),
                 shippingPrice,
+                couponCode: appliedCoupon?.code,
                 totalPrice: finalTotal,
             };
 
@@ -74,7 +119,6 @@ export default function CheckoutPage() {
                     clearCart();
                     router.push(`/?success=true`);
                 } else if (paymentMethod === "eSewa") {
-                    // Initialize eSewa redirect by fetching signed data from backend
                     const esewaRes = await fetch("/api/payment/esewa/initiate", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -105,7 +149,6 @@ export default function CheckoutPage() {
                     document.body.appendChild(form);
                     form.submit();
                 } else if (paymentMethod === "Khalti") {
-                    // Implement Khalti logic or redirect
                     alert("Khalti implementation triggered (Dev Mode)");
                     clearCart();
                     router.push(`/?success=true`);
@@ -290,10 +333,53 @@ export default function CheckoutPage() {
                         </div>
 
                         <div className="space-y-4 pt-8 border-t border-border">
-                            <div className="flex justify-between text-sm">
+                            {/* Coupon Code Input */}
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Coupon Code</label>
+                                <div className="flex gap-2">
+                                    <input
+                                        className="flex-1 bg-muted border border-border px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-primary text-sm uppercase"
+                                        placeholder="ENTER CODE"
+                                        value={couponCode}
+                                        onChange={(e) => setCouponCode(e.target.value)}
+                                        disabled={!!appliedCoupon}
+                                    />
+                                    {appliedCoupon ? (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setAppliedCoupon(null);
+                                                setCouponCode("");
+                                            }}
+                                            className="px-3 py-2 text-[10px] font-bold uppercase text-red-500 hover:bg-red-500/10 rounded-lg transition"
+                                        >
+                                            Remove
+                                        </button>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            onClick={handleApplyCoupon}
+                                            disabled={couponLoading || !couponCode}
+                                            className="px-4 py-2 bg-primary text-primary-foreground text-[10px] font-bold uppercase rounded-lg hover:bg-primary/90 transition disabled:opacity-50"
+                                        >
+                                            {couponLoading ? "..." : "Apply"}
+                                        </button>
+                                    )}
+                                </div>
+                                {couponError && <p className="text-[10px] text-red-500 font-bold uppercase tracking-tight">{couponError}</p>}
+                                {appliedCoupon && <p className="text-[10px] text-green-600 font-bold uppercase tracking-tight">Coupon Applied!</p>}
+                            </div>
+
+                            <div className="flex justify-between text-sm pt-4">
                                 <span className="text-muted-foreground uppercase font-bold text-xs tracking-widest">SUBTOTAL</span>
                                 <span className="font-bold">{formatPrice(totalPrice())}</span>
                             </div>
+                            {discountAmount > 0 && (
+                                <div className="flex justify-between text-sm text-green-600">
+                                    <span className="uppercase font-bold text-xs tracking-widest">DISCOUNT ({appliedCoupon?.code})</span>
+                                    <span className="font-bold">-{formatPrice(discountAmount)}</span>
+                                </div>
+                            )}
                             <div className="flex justify-between text-sm">
                                 <span className="text-muted-foreground uppercase font-bold text-xs tracking-widest">SHIPPING</span>
                                 <span className="font-bold">{formatPrice(shippingPrice)}</span>

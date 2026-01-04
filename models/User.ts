@@ -7,6 +7,7 @@ export interface IUser extends Document {
     image?: string;
     phone?: string;
     role: 'CUSTOMER' | 'ADMIN';
+    searchHistory?: string[];
     createdAt: Date;
     updatedAt: Date;
 }
@@ -19,6 +20,7 @@ const UserSchema = new Schema<IUser>(
         image: { type: String },
         phone: { type: String },
         role: { type: String, enum: ['CUSTOMER', 'ADMIN'], default: 'CUSTOMER' },
+        searchHistory: [{ type: String }],
     },
     { timestamps: true }
 );

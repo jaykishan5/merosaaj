@@ -13,6 +13,10 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import ReviewsSection from "@/components/ReviewsSection";
 import RelatedProducts from "@/components/RelatedProducts";
 import LocationModal from "@/components/LocationModal";
+import WhatsAppButton from "@/components/WhatsAppButton";
+import BundleSection from "@/components/BundleSection"; // New import
+import SocialShare from "@/components/SocialShare";
+import { Package as PackageIcon } from "lucide-react";
 
 export default function ProductDetailsPage() {
     const { slug } = useParams();
@@ -197,7 +201,10 @@ export default function ProductDetailsPage() {
                         <div className="space-y-6 md:space-y-8">
                             {/* Header */}
                             <div className="bg-white p-6 lg:p-0 rounded-2xl lg:rounded-none border lg:border-0 border-gray-100 shadow-sm lg:shadow-none">
-                                <h1 className="text-2xl md:text-3xl font-black text-primary leading-tight mb-4 tracking-tighter uppercase italic">{product.name}</h1>
+                                <div className="flex justify-between items-start gap-4">
+                                    <h1 className="text-2xl md:text-3xl font-black text-primary leading-tight mb-4 tracking-tighter uppercase italic flex-1">{product.name}</h1>
+                                    <SocialShare title={product.name} url={typeof window !== 'undefined' ? window.location.href : ''} />
+                                </div>
                                 <div className="flex flex-col gap-4">
                                     <div className="flex items-center gap-4">
                                         <div className="flex items-center">
@@ -313,24 +320,92 @@ export default function ProductDetailsPage() {
 
                                     {/* Web Actions */}
                                     <div className="hidden lg:flex flex-col sm:flex-row gap-4">
-                                        <motion.button
-                                            whileHover={{ scale: 1.02, backgroundColor: "#111111" }}
-                                            whileTap={{ scale: 0.98 }}
-                                            onClick={handleBuyNow}
-                                            disabled={!currentVariant || currentVariant.stock <= 0}
-                                            className="flex-1 bg-primary text-white h-14 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all disabled:opacity-50 shadow-xl shadow-primary/20"
-                                        >
-                                            Instant Buy
-                                        </motion.button>
-                                        <motion.button
-                                            whileHover={{ scale: 1.02, borderColor: "#8B0000", color: "#8B0000" }}
-                                            whileTap={{ scale: 0.98 }}
-                                            onClick={() => handleAddToCart()}
-                                            disabled={!currentVariant || currentVariant.stock <= 0}
-                                            className="flex-1 border-2 border-primary text-primary h-14 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all disabled:opacity-50"
-                                        >
-                                            Add to Bag
-                                        </motion.button>
+                                        {currentVariant && currentVariant.stock > 0 ? (
+                                            <>
+                                                <motion.button
+                                                    whileHover={{ scale: 1.02, backgroundColor: "#111111" }}
+                                                    whileTap={{ scale: 0.98 }}
+                                                    onClick={handleBuyNow}
+                                                    className="flex-1 bg-primary text-white h-14 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-xl shadow-primary/20"
+                                                >
+                                                    Instant Buy
+                                                </motion.button>
+                                                <motion.button
+                                                    whileHover={{ scale: 1.02, borderColor: "#8B0000", color: "#8B0000" }}
+                                                    whileTap={{ scale: 0.98 }}
+                                                    onClick={() => handleAddToCart()}
+                                                    className="flex-1 border-2 border-primary text-primary h-14 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all"
+                                                >
+                                                    Add to Bag
+                                                </motion.button>
+                                            </>
+                                        ) : product.allowPreOrder ? (
+                                            <motion.button
+                                                whileHover={{ scale: 1.02 }}
+                                                whileTap={{ scale: 0.98 }}
+                                                onClick={handleBuyNow}
+                                                className="w-full bg-accent text-white h-14 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-xl shadow-accent/20 flex flex-col items-center justify-center leading-tight"
+                                            >
+                                                <span>Pre-order Now</span>
+                                                {product.releaseDate && (
+                                                    <span className="text-[8px] opacity-70">Estimated Drop: {new Date(product.releaseDate).toLocaleDateString()}</span>
+                                                )}
+                                            </motion.button>
+                                        ) : (
+                                            <div className="w-full space-y-3">
+                                                <p className="text-[10px] font-black uppercase text-rose-500 text-center tracking-widest">Currently Unavailable</p>
+                                                <div className="flex gap-2">
+                                                    <input
+                                                        type="email"
+                                                        id="notify_email"
+                                                        placeholder="Your email address"
+                                                        className="flex-1 bg-muted px-4 py-3 rounded-xl text-xs font-bold outline-none border border-transparent focus:border-accent"
+                                                    />
+                                                    <button
+                                                        onClick={async () => {
+                                                            const email = (document.getElementById('notify_email') as HTMLInputElement).value;
+                                                            if (!email) return alert("Email required");
+                                                            const res = await fetch("/api/products/stock/notify", {
+                                                                method: "POST",
+                                                                headers: { "Content-Type": "application/json" },
+                                                                body: JSON.stringify({
+                                                                    productId: product._id,
+                                                                    size: selectedSize,
+                                                                    color: selectedColor,
+                                                                    email
+                                                                }),
+                                                            });
+                                                            const data = await res.json();
+                                                            alert(data.message);
+                                                        }}
+                                                        className="bg-primary text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors"
+                                                    >
+                                                        Notify
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Additional Engagement */}
+                                    <div className="space-y-4 pt-2">
+                                        <WhatsAppButton
+                                            productName={product.name}
+                                            productSlug={product.slug}
+                                            variant={selectedSize && selectedColor ? `${selectedSize}/${selectedColor}` : undefined}
+                                        />
+
+                                        <div className="bg-muted/30 p-4 rounded-2xl border border-gray-100 flex items-center gap-4">
+                                            <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
+                                                <PackageIcon className="w-5 h-5 text-accent" />
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-primary">Estimated Delivery</p>
+                                                <p className="text-[10px] font-bold text-muted-foreground italic">
+                                                    {deliveryInfo.region === 'Kathmandu Valley' ? 'Standard: 1-2 Days' : 'Shipping: 3-5 Days'}
+                                                </p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -353,20 +428,38 @@ export default function ProductDetailsPage() {
                                 </motion.button>
                                 <motion.button
                                     whileTap={{ scale: 0.98 }}
-                                    onClick={() => handleAddToCart()}
-                                    disabled={!currentVariant || currentVariant.stock <= 0}
-                                    className="flex-1 bg-primary text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-primary/10"
+                                    onClick={() => {
+                                        if (currentVariant && currentVariant.stock > 0) {
+                                            handleAddToCart();
+                                        } else if (product.allowPreOrder) {
+                                            handleBuyNow();
+                                        } else {
+                                            // Trigger modal or notification logic (simplified here)
+                                            alert("Sign up for back-in-stock notifications above!");
+                                        }
+                                    }}
+                                    className={`flex-1 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg ${currentVariant && currentVariant.stock > 0
+                                        ? "bg-primary text-white"
+                                        : product.allowPreOrder
+                                            ? "bg-accent text-white"
+                                            : "bg-muted text-muted-foreground opacity-50"
+                                        }`}
                                 >
-                                    Add to Bag
+                                    {currentVariant && currentVariant.stock > 0
+                                        ? "Add to Bag"
+                                        : product.allowPreOrder
+                                            ? "Pre-order Now"
+                                            : "Sold Out"}
                                 </motion.button>
-                                <motion.button
-                                    whileTap={{ scale: 0.98 }}
-                                    onClick={handleBuyNow}
-                                    disabled={!currentVariant || currentVariant.stock <= 0}
-                                    className="flex-1 bg-accent text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-accent/20"
-                                >
-                                    Instant Buy
-                                </motion.button>
+                                {(currentVariant && currentVariant.stock > 0) && (
+                                    <motion.button
+                                        whileTap={{ scale: 0.98 }}
+                                        onClick={handleBuyNow}
+                                        className="flex-1 bg-accent text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-accent/20"
+                                    >
+                                        Instant Buy
+                                    </motion.button>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -501,6 +594,8 @@ export default function ProductDetailsPage() {
                 </div>
 
                 <ReviewsSection productId={product._id} />
+
+                <BundleSection productId={product._id} />
 
                 <RelatedProducts category={product.category} currentProductId={product._id} />
             </main>

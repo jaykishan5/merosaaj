@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Star, User, MessageSquare } from "lucide-react";
+import { Star, User, MessageSquare, Camera, X } from "lucide-react";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 
@@ -32,6 +33,7 @@ interface Review {
     };
     rating: number;
     comment: string;
+    images?: string[];
     createdAt: string;
 }
 
@@ -41,6 +43,7 @@ export default function ReviewsSection({ productId }: { productId: string }) {
     const [loading, setLoading] = useState(true);
     const [rating, setRating] = useState(5);
     const [comment, setComment] = useState("");
+    const [reviewImages, setReviewImages] = useState<string[]>([]);
     const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
@@ -73,7 +76,7 @@ export default function ReviewsSection({ productId }: { productId: string }) {
             const res = await fetch("/api/reviews", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ productId, rating, comment }),
+                body: JSON.stringify({ productId, rating, comment, images: reviewImages }),
             });
 
             if (res.ok) {
@@ -81,6 +84,7 @@ export default function ReviewsSection({ productId }: { productId: string }) {
                 setReviews([newReview, ...reviews]);
                 setComment("");
                 setRating(5);
+                setReviewImages([]);
                 toast.success("Review submitted successfully!");
             } else {
                 toast.error("Failed to submit review");
@@ -145,6 +149,39 @@ export default function ReviewsSection({ productId }: { productId: string }) {
                                 required
                                 className="w-full bg-white border border-gray-100 rounded-xl p-3 text-sm min-h-[100px] mb-4 outline-none focus:ring-2 focus:ring-accent/20"
                             />
+
+                            {/* Image Upload Mock */}
+                            <div className="mb-4">
+                                <div className="flex flex-wrap gap-2 mb-2">
+                                    {reviewImages.map((img, idx) => (
+                                        <div key={idx} className="relative w-16 h-16 rounded-lg overflow-hidden border border-gray-100">
+                                            <Image src={img} alt="Preview" fill className="object-cover" />
+                                            <button
+                                                type="button"
+                                                onClick={() => setReviewImages(reviewImages.filter((_, i) => i !== idx))}
+                                                className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-0.5 hover:bg-black"
+                                            >
+                                                <X className="w-3 h-3" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                    {reviewImages.length < 3 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                const url = prompt("Enter image URL (Mock for upload):");
+                                                if (url) setReviewImages([...reviewImages, url]);
+                                            }}
+                                            className="w-16 h-16 rounded-lg border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-400 hover:border-accent hover:text-accent transition-colors"
+                                        >
+                                            <Camera className="w-5 h-5" />
+                                            <span className="text-[8px] font-bold mt-1 uppercase">Add</span>
+                                        </button>
+                                    )}
+                                </div>
+                                <p className="text-[9px] text-muted-foreground italic font-bold">Add up to 3 photos of your product</p>
+                            </div>
+
                             <button
                                 type="submit"
                                 disabled={submitting}
@@ -198,9 +235,18 @@ export default function ReviewsSection({ productId }: { productId: string }) {
                                         {timeAgo(review.createdAt)}
                                     </span>
                                 </div>
-                                <p className="text-sm text-muted-foreground leading-relaxed pl-[3.25rem]">
+                                <p className="text-sm text-muted-foreground leading-relaxed pl-[3.25rem] mb-4">
                                     {review.comment}
                                 </p>
+                                {review.images && review.images.length > 0 && (
+                                    <div className="flex gap-3 pl-[3.25rem]">
+                                        {review.images.map((img, idx) => (
+                                            <div key={idx} className="relative w-24 h-24 rounded-xl overflow-hidden shadow-sm border border-gray-50 hover:scale-105 transition-transform cursor-zoom-in">
+                                                <Image src={img} alt={`Review ${idx}`} fill className="object-cover" />
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </motion.div>
                         ))
                     ) : (

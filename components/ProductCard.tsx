@@ -19,6 +19,7 @@ interface ProductCardProps {
         images: string[];
         createdAt: string;
         variants?: { stock: number }[];
+        isBestseller?: boolean;
     };
     priority?: boolean;
     width?: string;
@@ -54,14 +55,19 @@ export default function ProductCard({ product, width = "w-full md:w-[320px]", pr
                                 -{Math.round((1 - product.discountPrice / product.price) * 100)}%
                             </div>
                         )}
-                        {product.createdAt && new Date(product.createdAt).getTime() > Date.now() - 7 * 24 * 60 * 60 * 1000 && (
-                            <div className="bg-blue-600 text-white font-black text-[8px] md:text-[10px] px-2 py-0.5 md:px-3 md:py-1 rounded-full uppercase tracking-widest shadow-lg">
+                        {product.createdAt && new Date(product.createdAt).getTime() > Date.now() - 14 * 24 * 60 * 60 * 1000 && (
+                            <div className="bg-blue-600 text-white font-black text-[8px] md:text-[9px] px-2 py-0.5 md:px-2.5 md:py-1 rounded-full uppercase tracking-widest shadow-lg">
                                 NEW DROP
                             </div>
                         )}
+                        {product.isBestseller && (
+                            <div className="bg-amber-500 text-white font-black text-[8px] md:text-[9px] px-2 py-0.5 md:px-2.5 md:py-1 rounded-full uppercase tracking-widest shadow-lg">
+                                BESTSELLER
+                            </div>
+                        )}
                         {product.variants && product.variants.length > 0 && product.variants.reduce((acc, v) => acc + v.stock, 0) < 5 && product.variants.reduce((acc, v) => acc + v.stock, 0) > 0 && (
-                            <div className="bg-orange-500 text-white font-black text-[8px] md:text-[10px] px-2 py-0.5 md:px-3 md:py-1 rounded-full uppercase tracking-widest shadow-lg animate-pulse">
-                                LAST {product.variants.reduce((acc, v) => acc + v.stock, 0)} LEFT
+                            <div className="bg-rose-500 text-white font-black text-[8px] md:text-[9px] px-2 py-0.5 md:px-2.5 md:py-1 rounded-full uppercase tracking-widest shadow-lg border border-white/20">
+                                LIMITED: {product.variants.reduce((acc, v) => acc + v.stock, 0)} LEFT
                             </div>
                         )}
                     </div>

@@ -11,7 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function SearchBar() {
     const router = useRouter();
     const [query, setQuery] = useState("");
-    const [results, setResults] = useState([]);
+    const [results, setResults] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const searchRef = useRef<HTMLDivElement>(null);
@@ -21,10 +21,10 @@ export default function SearchBar() {
         const fetchResults = async () => {
             setIsLoading(true);
             try {
-                const res = await fetch(`/api/products?search=${query}`);
+                const res = await fetch(`/api/products/suggestions?query=${query}`);
                 if (res.ok) {
                     const data = await res.json();
-                    setResults(data.slice(0, 5)); // Limit to 5 suggestions
+                    setResults(data);
                     setIsOpen(true);
                 }
             } catch (error) {
@@ -45,6 +45,19 @@ export default function SearchBar() {
         return () => clearTimeout(timer);
     }, [query]);
 
+    // Fetch search history
+    const [history, setHistory] = useState<string[]>([]);
+    useEffect(() => {
+        const fetchHistory = async () => {
+            const res = await fetch("/api/user/search-history");
+            if (res.ok) {
+                const data = await res.json();
+                setHistory(data);
+            }
+        };
+        fetchHistory();
+    }, []);
+
     // Close on click outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -57,11 +70,19 @@ export default function SearchBar() {
     }, []);
 
 
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (query.trim()) {
+    const handleSearch = async (e: React.FormEvent, term?: string) => {
+        if (e) e.preventDefault();
+        const searchTerm = term || query;
+        if (searchTerm.trim()) {
             setIsOpen(false);
-            router.push(`/shop?search=${query}`);
+            router.push(`/shop?search=${searchTerm}`);
+
+            // Save to history
+            await fetch("/api/user/search-history", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ term: searchTerm }),
+            });
         }
     };
 
@@ -112,46 +133,90 @@ export default function SearchBar() {
                         className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50 divide-y divide-gray-50"
                     >
                         {results.length > 0 ? (
-                            <>
+                            <div className="max-h-[70vh] overflow-y-auto">
                                 <div className="p-2">
-                                    <h4 className="text-[10px] uppercase font-black tracking-wider text-muted-foreground px-4 py-2">
-                                        Products
-                                    </h4>
-                                    {results.map((product: any) => (
-                                        <Link
-                                            key={product._id}
-                                            href={`/product/${product.slug}`}
-                                            onClick={() => setIsOpen(false)}
-                                            className="flex items-center gap-4 p-2 hover:bg-muted rounded-xl transition-colors group"
-                                        >
-                                            <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-muted">
-                                                <Image
-                                                    src={product.images[0]}
-                                                    alt={product.name}
-                                                    fill
-                                                    className="object-cover group-hover:scale-110 transition-transform"
-                                                />
-                                            </div>
-                                            <div className="flex-1">
-                                                <h5 className="text-sm font-bold text-primary group-hover:text-accent transition-colors line-clamp-1">
-                                                    {product.name}
-                                                </h5>
-                                                <p className="text-xs font-medium text-muted-foreground">
-                                                    {formatPrice(product.discountPrice || product.price)}
-                                                </p>
-                                            </div>
-                                        </Link>
-                                    ))}
+                                    {results.some(r => r.type === "category") && (
+                                        <div className="mb-2">
+                                            <h4 className="text-[10px] uppercase font-black tracking-wider text-muted-foreground px-4 py-2">
+                                                Categories
+                                            </h4>
+                                            {results.filter(r => r.type === "category").map((cat: any) => (
+                                                <button
+                                                    key={cat.text}
+                                                    onClick={() => handleSearch(null as any, cat.text)}
+                                                    className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-muted rounded-xl transition-colors text-sm font-bold text-primary italic"
+                                                >
+                                                    <div className="w-6 h-6 rounded-lg bg-accent/10 flex items-center justify-center">
+                                                        <Search className="w-3 h-3 text-accent" />
+                                                    </div>
+                                                    {cat.text}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {results.some(r => r.type === "product") && (
+                                        <div>
+                                            <h4 className="text-[10px] uppercase font-black tracking-wider text-muted-foreground px-4 py-2">
+                                                Products
+                                            </h4>
+                                            {results.filter(r => r.type === "product").map((product: any) => (
+                                                <Link
+                                                    key={product.slug}
+                                                    href={`/product/${product.slug}`}
+                                                    onClick={() => setIsOpen(false)}
+                                                    className="flex items-center gap-4 p-2 hover:bg-muted rounded-xl transition-colors group"
+                                                >
+                                                    <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-muted">
+                                                        <Image
+                                                            src={product.image}
+                                                            alt={product.text}
+                                                            fill
+                                                            className="object-cover group-hover:scale-110 transition-transform"
+                                                        />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <h5 className="text-sm font-bold text-primary group-hover:text-accent transition-colors line-clamp-1">
+                                                            {product.text}
+                                                        </h5>
+                                                        <p className="text-[10px] font-medium text-muted-foreground uppercase">
+                                                            {product.category} • {formatPrice(product.price)}
+                                                        </p>
+                                                    </div>
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                                 <button
                                     onClick={(e) => handleSearch(e)}
-                                    className="w-full p-3 text-center text-xs font-black uppercase tracking-widest text-accent hover:bg-accent/5 transition-colors"
+                                    className="w-full p-3 text-center text-[10px] font-black uppercase tracking-widest text-accent hover:bg-accent/5 transition-colors border-t border-gray-50"
                                 >
-                                    View All Results
+                                    Explore all findings
                                 </button>
-                            </>
+                            </div>
                         ) : query.trim().length === 0 ? (
                             <div className="p-6">
+                                {history.length > 0 && (
+                                    <div className="mb-6">
+                                        <h4 className="text-[10px] uppercase font-black tracking-wider text-muted-foreground px-1 mb-3 flex items-center justify-between">
+                                            Recent Searches
+                                            <Search className="w-3 h-3 opacity-20" />
+                                        </h4>
+                                        <div className="space-y-1">
+                                            {history.map((term) => (
+                                                <button
+                                                    key={term}
+                                                    onClick={() => handleSearch(null as any, term)}
+                                                    className="w-full flex items-center gap-3 px-3 py-2 hover:bg-muted rounded-lg transition-colors text-sm font-semibold text-primary/70 hover:text-primary"
+                                                >
+                                                    <X className="w-3 h-3 opacity-20" />
+                                                    {term}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                                 <div className="mb-6">
                                     <h4 className="text-[10px] uppercase font-black tracking-wider text-muted-foreground px-1 mb-3">
                                         Trending Searches
@@ -160,11 +225,7 @@ export default function SearchBar() {
                                         {["Oversized Tee", "Cargo Pants", "Hoodies", "Accessories"].map((trend) => (
                                             <button
                                                 key={trend}
-                                                onClick={() => {
-                                                    setQuery(trend);
-                                                    router.push(`/shop?search=${trend}`);
-                                                    setIsOpen(false);
-                                                }}
+                                                onClick={() => handleSearch(null as any, trend)}
                                                 className="px-4 py-1.5 rounded-full bg-muted/50 hover:bg-accent hover:text-white transition-all text-xs font-bold"
                                             >
                                                 {trend}
@@ -178,16 +239,16 @@ export default function SearchBar() {
                                     </h4>
                                     <div className="grid grid-cols-2 gap-2">
                                         {[
-                                            { name: "New Drops", href: "/shop?sort=newest" },
-                                            { name: "Best Sellers", href: "/shop?category=Best Sellers" },
-                                            { name: "Limited Edition", href: "/shop?category=Limited" },
-                                            { name: "Storefront", href: "/shop" }
+                                            { name: "Men's Core", href: "/shop?gender=Men" },
+                                            { name: "Women's Fit", href: "/shop?gender=Women" },
+                                            { name: "Limited Drops", href: "/shop?category=Limited" },
+                                            { name: "Accessories", href: "/shop?category=Accessories" }
                                         ].map((cat) => (
                                             <Link
                                                 key={cat.name}
                                                 href={cat.href}
                                                 onClick={() => setIsOpen(false)}
-                                                className="px-4 py-3 rounded-xl bg-muted/30 hover:bg-muted transition-colors text-xs font-black uppercase tracking-widest"
+                                                className="px-4 py-3 rounded-xl bg-muted/30 hover:bg-muted transition-colors text-[10px] font-black uppercase tracking-widest text-center"
                                             >
                                                 {cat.name}
                                             </Link>
@@ -197,7 +258,9 @@ export default function SearchBar() {
                             </div>
                         ) : (
                             <div className="p-8 text-center text-muted-foreground">
-                                <p className="text-sm font-medium">No products found for &quot;{query}&quot;</p>
+                                <Search className="w-10 h-10 mx-auto mb-4 opacity-10" />
+                                <p className="text-sm font-medium tracking-tight">Zero matches for &quot;{query}&quot;</p>
+                                <p className="text-[10px] uppercase font-bold tracking-widest mt-1 opacity-50">Try different keywords or filters</p>
                             </div>
                         )}
                     </motion.div>

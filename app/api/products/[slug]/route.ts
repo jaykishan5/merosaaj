@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Product from "@/models/Product";
+import StockNotification from "@/models/StockNotification";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
@@ -44,6 +45,10 @@ export async function PUT(
         const { slug } = params;
         const data = await req.json();
 
+        // Get old product for stock comparison
+        const oldProduct = await Product.findById(slug.match(/^[0-9a-fA-F]{24}$/) ? slug : null) ||
+            await Product.findOne({ slug });
+
         let product;
         if (slug.match(/^[0-9a-fA-F]{24}$/)) {
             product = await Product.findByIdAndUpdate(slug, data, { new: true });
@@ -53,6 +58,34 @@ export async function PUT(
 
         if (!product) {
             return NextResponse.json({ message: "Product not found" }, { status: 404 });
+        }
+
+        // Replenishment Trigger
+        if (oldProduct && product.variants) {
+            for (const variant of product.variants) {
+                const oldVariant = oldProduct.variants.find((v: any) => v.size === variant.size && v.color === variant.color);
+                const oldStock = oldVariant ? oldVariant.stock : 0;
+
+                if (variant.stock > 0 && oldStock === 0) {
+                    // Stock replenished! Find interested users
+                    const notifications = await StockNotification.find({
+                        product: product._id,
+                        'variant.size': variant.size,
+                        'variant.color': variant.color,
+                        isNotified: false
+                    });
+
+                    if (notifications.length > 0) {
+                        // In a real app, we'd loop and send emails. 
+                        // For now, we'll log it and mark as notified.
+                        console.log(`📣 Notifying ${notifications.length} users about ${product.name} replenishment.`);
+                        await StockNotification.updateMany(
+                            { _id: { $in: notifications.map((n: any) => n._id) } },
+                            { isNotified: true }
+                        );
+                    }
+                }
+            }
         }
 
         return NextResponse.json(product);

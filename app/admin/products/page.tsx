@@ -101,9 +101,16 @@ export default function AdminProductsPage() {
                                 <span className="font-black text-sm">{formatPrice(product.price)}</span>
                             </div>
                         </div>
-                        <div className="hidden md:flex flex-col items-center px-10 border-x border-border">
+                        <div className="hidden md:flex flex-col items-center px-10 border-x border-border min-w-[140px]">
                             <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1 text-center">In Stock</span>
-                            <span className="font-black text-lg">{product.variants.reduce((acc: number, v: any) => acc + v.stock, 0)}</span>
+                            <div className="flex items-center gap-2">
+                                <span className={`font-black text-lg ${product.variants.reduce((acc: number, v: any) => acc + v.stock, 0) < 10 ? "text-rose-500" : ""}`}>
+                                    {product.variants.reduce((acc: number, v: any) => acc + v.stock, 0)}
+                                </span>
+                                {product.variants.reduce((acc: number, v: any) => acc + v.stock, 0) < 10 && (
+                                    <span className="bg-rose-500/10 text-rose-500 text-[8px] font-black px-1.5 py-0.5 rounded leading-none border border-rose-500/20">LOW</span>
+                                )}
+                            </div>
                         </div>
                         <div className="flex items-center gap-2">
                             <button
