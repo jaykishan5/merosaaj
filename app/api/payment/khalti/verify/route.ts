@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Order from "@/models/Order";
+import { createNotification } from "@/lib/notifications";
 
 export async function POST(req: Request) {
     try {
@@ -37,6 +38,15 @@ export async function POST(req: Request) {
                     email_address: verifyData.user?.email || '',
                 };
                 await order.save();
+
+                // Notify Admin
+                await createNotification({
+                    title: "Payment Confirmed",
+                    message: `Order #${order._id.toString().substring(0, 8).toUpperCase()} has been paid via Khalti.`,
+                    type: "order",
+                    link: "/admin/orders"
+                });
+
                 return NextResponse.json({ message: "Payment verified successfully" });
             }
         }

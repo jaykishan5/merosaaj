@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Order from "@/models/Order";
 import crypto from "crypto";
+import { createNotification } from "@/lib/notifications";
 
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
@@ -34,6 +35,14 @@ export async function GET(req: Request) {
             email_address: '', // eSewa doesn't provide this directly in v2 success data
         };
         await order.save();
+
+        // Notify Admin
+        await createNotification({
+            title: "Payment Confirmed",
+            message: `Order #${order._id.toString().substring(0, 8).toUpperCase()} has been paid via eSewa.`,
+            type: "order",
+            link: "/admin/orders"
+        });
 
         return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/?success=true`);
     }

@@ -6,6 +6,7 @@ import { authOptions } from "@/lib/auth";
 import dbConnect from "@/lib/mongodb";
 import Order from "@/models/Order";
 import Product from "@/models/Product";
+import { createNotification } from "@/lib/notifications";
 
 export async function POST(req: Request) {
     try {
@@ -36,9 +37,23 @@ export async function POST(req: Request) {
                 return NextResponse.json({ message: `Product ${item.name} not found` }, { status: 404 });
             }
             // Check stock for specific variant
-            const variant = dbProduct.variants.find((v: any) => v.size === item.size && v.color === item.color);
-            if (!variant || variant.stock < item.quantity) {
+            const variantIndex = dbProduct.variants.findIndex((v: any) => v.size === item.size && v.color === item.color);
+            if (variantIndex === -1 || dbProduct.variants[variantIndex].stock < item.quantity) {
                 return NextResponse.json({ message: `Insufficient stock for ${item.name} (${item.size}/${item.color})` }, { status: 400 });
+            }
+
+            // Reduce Stock
+            dbProduct.variants[variantIndex].stock -= item.quantity;
+            await dbProduct.save();
+
+            // Stock Alert Notification (if below threshold, e.g., 5)
+            if (dbProduct.variants[variantIndex].stock <= 5) {
+                await createNotification({
+                    title: "Low Stock Alert",
+                    message: `${dbProduct.name} (${item.size}/${item.color}) is running low. Only ${dbProduct.variants[variantIndex].stock} left.`,
+                    type: "alert",
+                    link: `/admin/products`
+                });
             }
         }
 
@@ -54,6 +69,14 @@ export async function POST(req: Request) {
             shippingPrice: shippingPrice,
             totalPrice: totalPrice,
             status: "Pending",
+        });
+
+        // Notify Admin of New Order
+        await createNotification({
+            title: `New Order #${order._id.toString().substring(0, 8).toUpperCase()}`,
+            message: `${session.user.name} placed a new order for NPR ${totalPrice.toLocaleString()}`,
+            type: "order",
+            link: `/admin/orders`
         });
 
         return NextResponse.json({ message: "Order created successfully", orderId: order._id }, { status: 201 });

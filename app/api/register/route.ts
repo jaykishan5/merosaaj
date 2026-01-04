@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
+import { createNotification } from "@/lib/notifications";
 
 export async function POST(req: Request) {
     try {
@@ -32,6 +33,14 @@ export async function POST(req: Request) {
             email,
             password: hashedPassword,
             role: "CUSTOMER", // Default role
+        });
+
+        // Notify Admin
+        await createNotification({
+            title: "New User Registered",
+            message: `${name} (${email}) created a new account.`,
+            type: "user",
+            link: "/admin/users"
         });
 
         return NextResponse.json(
