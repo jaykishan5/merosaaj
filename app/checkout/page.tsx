@@ -189,7 +189,7 @@ export default function CheckoutPage() {
                                             required
                                         />
                                     </div>
-                                    <div className="space-y-2 md:col-span-1">
+                                    <div className="space-y-2 col-span-2 md:col-span-1">
                                         <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">City</label>
                                         <input
                                             className="w-full bg-muted border border-border p-4 rounded-xl outline-none focus:ring-2 focus:ring-primary"
@@ -198,7 +198,7 @@ export default function CheckoutPage() {
                                             required
                                         />
                                     </div>
-                                    <div className="space-y-2 md:col-span-1">
+                                    <div className="space-y-2 col-span-2 md:col-span-1">
                                         <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Delivery Region</label>
                                         <select
                                             className="w-full bg-muted border border-border p-4 rounded-xl outline-none focus:ring-2 focus:ring-primary appearance-none"

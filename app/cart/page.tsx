@@ -99,9 +99,9 @@ export default function CartPage() {
                                     <span className="text-muted-foreground">SUBTOTAL</span>
                                     <span className="font-bold">{formatPrice(totalPrice())}</span>
                                 </div>
-                                <div className="flex justify-between text-sm">
+                                <div className="flex flex-col sm:flex-row justify-between sm:items-center text-sm gap-1 sm:gap-0">
                                     <span className="text-muted-foreground">SHIPPING</span>
-                                    <span className="text-accent font-bold">CALCULATED AT CHECKOUT</span>
+                                    <span className="text-accent font-bold text-[10px] sm:text-sm">CALCULATED AT CHECKOUT</span>
                                 </div>
                                 <div className="pt-4 border-t border-border flex justify-between">
                                     <span className="font-bold text-lg">TOTAL</span>
