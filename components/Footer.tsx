@@ -8,7 +8,7 @@ import { toast } from "sonner";
 export default function Footer() {
     const pathname = usePathname();
 
-    if (pathname.startsWith("/admin")) {
+    if (pathname.startsWith("/admin") || pathname === "/login" || pathname === "/register") {
         return null;
     }
 
