@@ -48,7 +48,7 @@ export default function Footer() {
                     <div>
                         <h3 className="text-sm font-black uppercase tracking-widest mb-6">Support</h3>
                         <ul className="space-y-4 text-sm text-white/60">
-                            <li><FooterLink href="/track-order">Track Order</FooterLink></li>
+
                             <li><FooterLink href="/returns">Returns & Exchanges</FooterLink></li>
                             <li><FooterLink href="/shipping">Shipping Policy</FooterLink></li>
                             <li><FooterLink href="/contact">Contact Us</FooterLink></li>

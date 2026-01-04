@@ -39,7 +39,7 @@ export default function CheckoutPage() {
         setIsAddressModalOpen(false);
     };
 
-    const shippingPrice = shippingInfo.region === "Kathmandu Valley" ? 100 : 200;
+    const shippingPrice = 100;
     const finalTotal = totalPrice() + shippingPrice;
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -206,7 +206,7 @@ export default function CheckoutPage() {
                                             onChange={(e) => setShippingInfo({ ...shippingInfo, region: e.target.value as any })}
                                         >
                                             <option value="Kathmandu Valley">Kathmandu Valley (NPR 100)</option>
-                                            <option value="Outside Valley">Outside Valley (NPR 200)</option>
+                                            <option value="Outside Valley">Outside Valley (NPR 100)</option>
                                         </select>
                                     </div>
                                 </div>

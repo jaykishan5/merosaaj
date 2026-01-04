@@ -120,9 +120,6 @@ export default function Navbar() {
                     </ul>
 
                     <div className="flex items-center gap-8 text-[11px] font-black text-muted-foreground uppercase tracking-wider">
-                        <Link href="/track-order" className="hover:text-primary transition-colors flex items-center gap-2">
-                            Track Order
-                        </Link>
                         <Link href="/help" className="hover:text-primary transition-colors">
                             Help Center
                         </Link>
@@ -292,7 +289,6 @@ export default function Navbar() {
                                     className="space-y-8 pt-8 border-t border-white/5"
                                 >
                                     <div className="flex items-center gap-8">
-                                        <Link href="/track-order" onClick={() => setIsMobileMenuOpen(false)} className="text-white/40 hover:text-white font-black text-[10px] uppercase tracking-[0.2em] transition-colors">Track Order</Link>
                                         <Link href="/help" onClick={() => setIsMobileMenuOpen(false)} className="text-white/40 hover:text-white font-black text-[10px] uppercase tracking-[0.2em] transition-colors">Help Center</Link>
                                     </div>
                                     <div className="bg-gradient-to-r from-accent/10 to-transparent p-4 rounded-2xl border border-accent/20 flex items-center justify-between">

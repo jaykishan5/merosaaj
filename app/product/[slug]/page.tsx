@@ -12,6 +12,7 @@ import Link from "next/link";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import ReviewsSection from "@/components/ReviewsSection";
 import RelatedProducts from "@/components/RelatedProducts";
+import LocationModal from "@/components/LocationModal";
 
 export default function ProductDetailsPage() {
     const { slug } = useParams();
@@ -25,6 +26,13 @@ export default function ProductDetailsPage() {
     const { toggleItem, isInWishlist } = useWishlist();
     const isWishlisted = product ? isInWishlist(product._id) : false;
     const [quantity, setQuantity] = useState(1);
+    const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
+    const [deliveryInfo, setDeliveryInfo] = useState({
+        address: "Bagmati, Kathmandu Metro 22 - Newroad Area, Newroad",
+        city: "Kathmandu",
+        region: "Kathmandu Valley" as "Kathmandu Valley" | "Outside Valley",
+        shippingPrice: 100
+    });
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -378,8 +386,8 @@ export default function ProductDetailsPage() {
                                 </div>
                                 <div className="flex-1">
                                     <div className="flex justify-between items-start mb-1">
-                                        <p className="text-xs font-bold text-primary leading-relaxed">Bagmati, Kathmandu Metro 22 - Newroad Area, Newroad</p>
-                                        <button onClick={() => alert("Location change feature coming soon!")} className="text-[10px] font-black text-accent hover:underline shrink-0 ml-2 tracking-widest">CHANGE</button>
+                                        <p className="text-xs font-bold text-primary leading-relaxed">{deliveryInfo.address}</p>
+                                        <button onClick={() => setIsLocationModalOpen(true)} className="text-[10px] font-black text-accent hover:underline shrink-0 ml-2 tracking-widest">CHANGE</button>
                                     </div>
                                 </div>
                             </div>
@@ -394,9 +402,9 @@ export default function ProductDetailsPage() {
                                     <div className="flex justify-between items-center">
                                         <div className="space-y-0.5">
                                             <p className="text-xs font-black text-primary uppercase">Standard Delivery</p>
-                                            <p className="text-[10px] text-muted-foreground font-bold italic">Arriving by Jan 5th</p>
+                                            <p className="text-[10px] text-muted-foreground font-bold italic">Arriving by {new Date(Date.now() + (deliveryInfo.region === 'Kathmandu Valley' ? 2 : 4) * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
                                         </div>
-                                        <p className="text-xs font-black text-primary">Rs. 83</p>
+                                        <p className="text-xs font-black text-primary">Rs. {deliveryInfo.shippingPrice}</p>
                                     </div>
                                 </div>
                             </div>
@@ -496,6 +504,13 @@ export default function ProductDetailsPage() {
 
                 <RelatedProducts category={product.category} currentProductId={product._id} />
             </main>
+
+            <LocationModal
+                isOpen={isLocationModalOpen}
+                onClose={() => setIsLocationModalOpen(false)}
+                onSelectLocation={(loc) => setDeliveryInfo(loc)}
+                currentLocation={deliveryInfo}
+            />
         </div>
     );
 }

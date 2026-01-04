@@ -117,6 +117,13 @@ export default function ProfilePage() {
                                     <span className="flex items-center"><Map className="w-4 h-4 mr-3 text-muted-foreground group-hover:text-primary transition" /> Address Book</span>
                                     <ChevronRight className="w-4 h-4 text-muted-foreground/30" />
                                 </button>
+                                <button
+                                    onClick={() => router.push('/track-order')}
+                                    className="w-full flex items-center justify-between p-3 text-sm font-bold hover:bg-muted rounded-xl transition group"
+                                >
+                                    <span className="flex items-center"><Truck className="w-4 h-4 mr-3 text-muted-foreground group-hover:text-primary transition" /> Track Order</span>
+                                    <ChevronRight className="w-4 h-4 text-muted-foreground/30" />
+                                </button>
                                 <hr className="my-4 border-border" />
                                 <button
                                     onClick={() => signOut()}
