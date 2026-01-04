@@ -5,12 +5,14 @@ import ProductCard from "@/components/ProductCard";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
+import dbConnect from "@/lib/mongodb";
+import Collection from "@/models/Collection";
+
 async function getCollection(slug: string) {
-    const res = await fetch(`${process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/collections?slug=${slug}`, {
-        next: { revalidate: 3600 }
-    });
-    if (!res.ok) return null;
-    return res.json();
+    await dbConnect();
+    const collection = await Collection.findOne({ slug }).populate("products").lean();
+    if (!collection) return null;
+    return JSON.parse(JSON.stringify(collection));
 }
 
 export default async function CollectionDetailPage({ params }: { params: { slug: string } }) {

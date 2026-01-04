@@ -5,12 +5,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
+import dbConnect from "@/lib/mongodb";
+import Collection from "@/models/Collection";
+
 async function getCollections() {
-    const res = await fetch(`${process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/collections`, {
-        next: { revalidate: 3600 }
-    });
-    if (!res.ok) return [];
-    return res.json();
+    await dbConnect();
+    const collections = await Collection.find({ isActive: true }).sort({ createdAt: -1 }).lean();
+    return JSON.parse(JSON.stringify(collections));
 }
 
 export default async function CollectionsPage() {
