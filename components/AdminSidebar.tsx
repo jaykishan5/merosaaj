@@ -19,22 +19,20 @@ import { signOut } from "next-auth/react";
 interface AdminSidebarProps {
     isMobileOpen?: boolean;
     onCloseMobile?: () => void;
+    isCollapsed: boolean;
+    onToggleCollapse: () => void;
 }
 
-export default function AdminSidebar({ isMobileOpen = false, onCloseMobile }: AdminSidebarProps) {
+export default function AdminSidebar({
+    isMobileOpen = false,
+    onCloseMobile,
+    isCollapsed,
+    onToggleCollapse
+}: AdminSidebarProps) {
     const pathname = usePathname();
-    const [isCollapsed, setIsCollapsed] = useState(false);
-
-    // Persist collapse state
-    useEffect(() => {
-        const savedState = localStorage.getItem("adminSidebarCollapsed");
-        if (savedState) setIsCollapsed(JSON.parse(savedState));
-    }, []);
 
     const toggleSidebar = () => {
-        const newState = !isCollapsed;
-        setIsCollapsed(newState);
-        localStorage.setItem("adminSidebarCollapsed", JSON.stringify(newState));
+        onToggleCollapse();
     };
 
     const menuItems = [
@@ -46,7 +44,7 @@ export default function AdminSidebar({ isMobileOpen = false, onCloseMobile }: Ad
 
     return (
         <aside
-            className={`fixed left-0 top-0 h-screen bg-card border-r border-border flex flex-col z-50 transition-all duration-300 ease-in-out 
+            className={`fixed left-0 top-0 h-screen bg-card border-r border-border flex flex-col z-[120] transition-all duration-300 ease-in-out 
                 ${isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
                 ${isCollapsed ? "lg:w-20" : "lg:w-64"}
                 w-64

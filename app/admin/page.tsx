@@ -102,7 +102,7 @@ export default function AdminDashboardPage() {
                 </div>
 
                 {/* Date Range Filter Placeholder */}
-                <div className="flex items-center gap-2 p-1 bg-muted rounded-2xl border border-border">
+                <div className="flex items-center gap-1 p-1 bg-muted/50 rounded-full border border-border/50 backdrop-blur-sm">
                     {[
                         { label: 'Today', value: 'today' },
                         { label: '7D', value: '7d' },
@@ -112,7 +112,9 @@ export default function AdminDashboardPage() {
                         <button
                             key={period.value}
                             onClick={() => setRange(period.value)}
-                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${range === period.value ? 'bg-card text-foreground shadow-sm border border-border' : 'text-muted-foreground hover:text-foreground'
+                            className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 ${range === period.value
+                                ? 'bg-card text-primary shadow-[0_8px_20px_-6px_rgba(0,0,0,0.1)] border border-border scale-105'
+                                : 'text-muted-foreground hover:text-primary hover:bg-card/30'
                                 }`}
                         >
                             {period.label}
@@ -122,28 +124,28 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
                 {statCards.map((card, i) => (
-                    <button
+                    <div
                         key={i}
                         onClick={() => router.push(card.href)}
-                        className="text-left bg-card p-8 rounded-[2rem] border border-border hover:shadow-xl hover:border-primary/20 transition-all group relative overflow-hidden"
+                        className="text-left bg-card p-6 md:p-8 rounded-[2.5rem] border border-border hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.08)] hover:border-primary/20 transition-all duration-500 group relative overflow-hidden cursor-pointer active:scale-[0.98]"
                     >
                         <div className="flex justify-between items-start mb-6 relative z-10">
-                            <div className={`p-4 rounded-2xl ${card.bg} ${card.color}`}>
-                                <card.icon className="w-6 h-6" />
+                            <div className={`w-14 h-14 rounded-2xl ${card.bg} ${card.color} flex items-center justify-center transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3`}>
+                                <card.icon className="w-7 h-7" />
                             </div>
-                            <div className="p-2 rounded-full bg-muted opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:translate-x-0 translate-x-4">
                                 <ArrowRight className="w-4 h-4 text-primary" />
                             </div>
                         </div>
                         <div className="relative z-10">
-                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1">{card.title}</p>
-                            <h3 className="text-3xl font-black tracking-tight mb-2 group-hover:text-primary transition-colors">{card.value}</h3>
-                            <p className="text-[9px] font-bold text-muted-foreground/60 leading-relaxed uppercase tracking-wider">{card.description}</p>
+                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] mb-3">{card.title}</p>
+                            <h3 className="text-2xl font-black tracking-tight mb-4 group-hover:text-primary transition-colors italic leading-none">{card.value}</h3>
+                            <p className="text-[10px] font-bold text-muted-foreground/40 leading-relaxed uppercase tracking-[0.1em]">{card.description}</p>
                         </div>
-                        <div className={`absolute -right-4 -bottom-4 w-24 h-24 rounded-full opacity-[0.03] group-hover:scale-150 transition-transform duration-700 ${card.bg}`} />
-                    </button>
+                        <div className={`absolute -right-8 -bottom-8 w-32 h-32 rounded-full opacity-[0.03] group-hover:scale-150 transition-transform duration-1000 ${card.bg}`} />
+                    </div>
                 ))}
             </div>
 
