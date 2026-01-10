@@ -22,13 +22,20 @@ export default function OrderSuccessPage() {
     useEffect(() => {
         const fetchOrder = async () => {
             try {
-                // Fetch order details – in production we would have a GET /api/orders/[id]
-                const res = await fetch("/api/admin/orders"); // Hacky way for dev: get all and find
+                const res = await fetch(`/api/orders/${id}`);
                 const data = await res.json();
-                const found = data.find((o: any) => o._id === id);
-                setOrder(found);
-            } catch (err) {
+
+                if (!res.ok) {
+                    throw new Error(data.message || "Failed to load order");
+                }
+
+                setOrder(data);
+            } catch (err: any) {
                 console.error(err);
+                if (err.message === "Not authorized") {
+                    // Redirect to login if not authenticated
+                    window.location.href = `/login?callbackUrl=/order/${id}`;
+                }
             } finally {
                 setLoading(false);
             }
@@ -36,8 +43,24 @@ export default function OrderSuccessPage() {
         fetchOrder();
     }, [id]);
 
-    if (loading) return <div className="p-20 text-center">Verifying order...</div>;
-    if (!order) return <div className="p-20 text-center">Order not found.</div>;
+    if (loading) return (
+        <div className="min-h-screen bg-background flex flex-col items-center justify-center space-y-4">
+            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-xs font-black uppercase tracking-widest text-muted-foreground animate-pulse">Verifying Order...</p>
+        </div>
+    );
+
+    if (!order) return (
+        <div className="min-h-screen bg-background flex flex-col items-center justify-center space-y-6">
+            <div className="text-center">
+                <h1 className="text-2xl font-black uppercase tracking-tighter mb-2 italic">Order Not Found</h1>
+                <p className="text-muted-foreground text-sm font-medium">You might not have permission to view this order <br /> or it doesn't exist.</p>
+            </div>
+            <Link href="/shop" className="px-8 py-3 bg-primary text-primary-foreground rounded-xl text-xs font-black uppercase tracking-widest hover:bg-black transition-colors">
+                Return to Shop
+            </Link>
+        </div>
+    );
 
     return (
         <div className="min-h-screen bg-background">

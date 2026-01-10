@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import ProductCard from "@/components/ProductCard";
 import { Zap } from "lucide-react";
+import CountdownTimer from "@/components/CountdownTimer";
 
 export default function FlashSalePage() {
     const [products, setProducts] = useState<any[]>([]);
@@ -25,22 +26,33 @@ export default function FlashSalePage() {
         fetchFlashSales();
     }, []);
 
+    // Determine the end time for the timer (use the one from the first product or fallback)
+    const flashSaleEndTime = products.length > 0 && products[0].flashSale?.endTime
+        ? new Date(products[0].flashSale.endTime)
+        : new Date(Date.now() + 24 * 60 * 60 * 1000);
+
     return (
         <div className="min-h-screen bg-background">
             <Navbar />
 
             <main className="max-w-[1440px] mx-auto px-4 md:px-6 pt-32 pb-20">
-                <div className="mb-12 text-center space-y-4">
+                <div className="mb-12 text-center space-y-6 flex flex-col items-center">
                     <div className="inline-flex items-center gap-2 bg-rose-100 px-4 py-2 rounded-full text-rose-600 font-black uppercase tracking-widest text-xs animate-pulse">
                         <Zap className="w-4 h-4 fill-rose-600" />
                         Live Now
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-black text-primary uppercase tracking-tighter">
-                        Flash <span className="text-rose-600">Drops</span>
-                    </h1>
-                    <p className="text-muted-foreground font-bold tracking-wide max-w-lg mx-auto">
-                        Limited time offers on exclusive Merosaaj collections. Grab them before the countdown ends.
-                    </p>
+                    <div>
+                        <h1 className="text-4xl md:text-6xl font-black text-primary uppercase tracking-tighter">
+                            Flash <span className="text-rose-600">Drops</span>
+                        </h1>
+                        <p className="text-muted-foreground font-bold tracking-wide max-w-lg mx-auto mt-2">
+                            Limited time offers on exclusive Merosaaj collections. Grab them before the countdown ends.
+                        </p>
+                    </div>
+
+                    <div className="pt-4">
+                        <CountdownTimer targetDate={flashSaleEndTime} />
+                    </div>
                 </div>
 
                 {loading ? (

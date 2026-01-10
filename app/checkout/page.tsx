@@ -118,7 +118,7 @@ export default function CheckoutPage() {
             if (res.ok) {
                 if (paymentMethod === "COD") {
                     clearCart();
-                    router.push(`/?success=true`);
+                    router.push(`/order/${data.orderId}?success=true`);
                 } else if (paymentMethod === "eSewa") {
                     const esewaRes = await fetch("/api/payment/esewa/initiate", {
                         method: "POST",
@@ -150,9 +150,27 @@ export default function CheckoutPage() {
                     document.body.appendChild(form);
                     form.submit();
                 } else if (paymentMethod === "Khalti") {
-                    toast.info("Khalti implementation triggered (Dev Mode)");
-                    clearCart();
-                    router.push(`/?success=true`);
+                    const khaltiRes = await fetch("/api/payment/khalti/initiate", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            amount: finalTotal,
+                            transactionId: data.orderId,
+                            orderName: `Order #${data.orderId.substring(0, 8)}`,
+                        }),
+                    });
+
+                    const khaltiData = await khaltiRes.json();
+
+                    if (!khaltiRes.ok) {
+                        throw new Error(khaltiData.message || "Failed to initiate Khalti payment");
+                    }
+
+                    if (khaltiData.payment_url) {
+                        window.location.href = khaltiData.payment_url;
+                    } else {
+                        throw new Error("Payment URL not received from Khalti");
+                    }
                 }
             } else {
                 toast.error(data.message || "Failed to place order");

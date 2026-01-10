@@ -1,37 +1,39 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Order from "@/models/Order";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export async function GET(
     req: Request,
     { params }: { params: { id: string } }
 ) {
     try {
-        const { searchParams } = new URL(req.url);
-        const email = searchParams.get("email");
-
-        if (!email) {
-            return NextResponse.json({ message: "Email is required" }, { status: 400 });
+        const session: any = await getServerSession(authOptions);
+        if (!session) {
+            return NextResponse.json({ message: "Not authorized" }, { status: 401 });
         }
 
         await dbConnect();
 
-        // Find order by ID and verify email matches the shipping address
-        const order = await Order.findById(params.id);
+        // Find order by ID and populate user info
+        const order = await Order.findById(params.id).populate("user", "name email");
 
         if (!order) {
             return NextResponse.json({ message: "Order not found" }, { status: 404 });
         }
 
-        // Security check: Only return order if email matches
-        if (order.shippingAddress.email.toLowerCase() !== email.toLowerCase()) {
-            return NextResponse.json({ message: "Order not found for this email" }, { status: 404 });
+        // Security check: Only return order if user is owner or an ADMIN
+        const isOwner = order.user?._id.toString() === session.user.id;
+        const isAdmin = session.user.role === "ADMIN";
+
+        if (!isOwner && !isAdmin) {
+            return NextResponse.json({ message: "Access denied" }, { status: 403 });
         }
 
-        // Return the order data (we can filter fields if needed for privacy, 
-        // but since they have the ID and Email, they are authorized to see this specific order)
         return NextResponse.json(order);
     } catch (error: any) {
-        return NextResponse.json({ message: "Failed to track order" }, { status: 500 });
+        console.error("Fetch Order Error:", error);
+        return NextResponse.json({ message: "Failed to fetch order details" }, { status: 500 });
     }
 }

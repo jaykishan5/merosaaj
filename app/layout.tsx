@@ -8,14 +8,51 @@ import Footer from "@/components/Footer";
 import { Toaster } from "sonner";
 import { NextIntlClientProvider } from "next-intl";
 import { cookies } from "next/headers";
+import OrderSuccessModal from "@/components/OrderSuccessModal";
 
 const inter = Inter({ subsets: ["latin"] });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
 
 export const metadata: Metadata = {
-    title: "merosaaj | Premium Nepali Streetwear",
-    description: "Modern Nepali clothing and accessories brand combining streetwear aesthetics with cultural identity.",
+    title: {
+        default: "merosaaj | Premium Nepali Streetwear",
+        template: "%s | merosaaj"
+    },
+    description: "Modern Nepali clothing and accessories brand combining streetwear aesthetics with cultural identity. Premium quality streetwear made in Nepal.",
+    keywords: ["Nepali streetwear", "clothing brand Nepal", "merosaaj", "Nepali fashion", "streetwear accessories"],
+    authors: [{ name: "merosaaj" }],
+    creator: "merosaaj",
+    publisher: "merosaaj",
+    formatDetection: {
+        email: false,
+        address: false,
+        telephone: false,
+    },
+    metadataBase: new URL("https://merosaaj.com"),
+    openGraph: {
+        type: "website",
+        locale: "en_US",
+        url: "https://merosaaj.com",
+        siteName: "merosaaj",
+        title: "merosaaj | Premium Nepali Streetwear",
+        description: "Modern Nepali clothing and accessories brand combining streetwear aesthetics with cultural identity.",
+        images: [
+            {
+                url: "/og-image.jpg",
+                width: 1200,
+                height: 630,
+                alt: "merosaaj - Premium Nepali Streetwear",
+            },
+        ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "merosaaj | Premium Nepali Streetwear",
+        description: "Modern Nepali clothing and accessories brand combining streetwear aesthetics with cultural identity.",
+        images: ["/og-image.jpg"],
+        creator: "@merosaaj",
+    },
 };
 
 export default async function RootLayout({
@@ -38,6 +75,7 @@ export default async function RootLayout({
                     <AuthProvider>
                         <CartSessionManager />
                         {children}
+                        <OrderSuccessModal />
                         <Footer />
                         <Toaster position="top-center" richColors />
                     </AuthProvider>

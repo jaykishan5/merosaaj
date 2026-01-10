@@ -1,12 +1,16 @@
+import { Metadata } from 'next';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import ProductCard from "@/components/ProductCard";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-
 import dbConnect from "@/lib/mongodb";
 import Collection from "@/models/Collection";
+
+interface Props {
+    params: { slug: string };
+}
 
 async function getCollection(slug: string) {
     await dbConnect();
@@ -15,7 +19,37 @@ async function getCollection(slug: string) {
     return JSON.parse(JSON.stringify(collection));
 }
 
-export default async function CollectionDetailPage({ params }: { params: { slug: string } }) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const collection = await getCollection(params.slug);
+
+    if (!collection) {
+        return {
+            title: 'Collection Not Found',
+        };
+    }
+
+    const title = `${collection.name} | merosaaj`;
+    const description = collection.description.slice(0, 160);
+
+    return {
+        title,
+        description,
+        openGraph: {
+            title,
+            description,
+            images: [collection.image],
+            type: 'website',
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+            images: [collection.image],
+        },
+    };
+}
+
+export default async function CollectionDetailPage({ params }: Props) {
     const collection = await getCollection(params.slug);
 
     if (!collection) {

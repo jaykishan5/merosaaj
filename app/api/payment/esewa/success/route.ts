@@ -44,7 +44,7 @@ export async function GET(req: Request) {
             link: "/admin/orders"
         });
 
-        return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/?success=true`);
+        return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/order/${order._id}?success=true`);
     }
 
     return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/checkout?error=failed`);
