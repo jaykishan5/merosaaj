@@ -9,18 +9,18 @@ import { useState, useEffect } from "react";
 const slides = [
     {
         id: 1,
-        title: "BEYOND IDENTITY",
-        subtitle: "Season Drop '26",
-        description: "Premium streetwear that blends modern aesthetics with Nepali cultural roots.",
-        image: "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?auto=format&fit=crop&q=80",
+        title: "AUTHENTIC NEPAL",
+        subtitle: "Heritage Collection",
+        description: "Streetwear that captures the soul of Kathmandu and the majesty of the Himalayas.",
+        image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=2670&auto=format&fit=crop", // Kathmandu cultural backdrop
         color: "accent"
     },
     {
         id: 2,
-        title: "CORE ESSENTIALS",
-        subtitle: "New Arrivals",
-        description: "Minimalist designs for maximal impact. Crafted for the authentic soul.",
-        image: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&q=80",
+        title: "HIMALAYAN GRIT",
+        subtitle: "Technical Drop",
+        description: "Engineered for resilience. Built for the streets of the valley.",
+        image: "https://images.unsplash.com/photo-1505305976870-c0be14404ebb?q=80&w=2670&auto=format&fit=crop", // Kathmandu urban vibes
         color: "primary"
     },
 ];

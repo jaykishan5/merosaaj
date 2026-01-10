@@ -8,8 +8,11 @@ import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import SearchBar from "./SearchBar";
+import LanguageSwitcher from "./LanguageSwitcher";
+import { useTranslations } from "next-intl";
 
 export default function Navbar() {
+    const t = useTranslations("Navbar");
     const totalItems = useCart((state) => state.totalItems());
     const [mounted, setMounted] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
@@ -26,10 +29,10 @@ export default function Navbar() {
     }, []);
 
     const categories = [
-        { name: "Men", href: "/shop?gender=Men" },
+        { name: "Men", href: "/shop?gender=Men", badge: "HOT" },
         { name: "Women", href: "/shop?gender=Women" },
         { name: "Accessories", href: "/shop?category=Accessories" },
-        { name: "Limited Drops", href: "/shop?category=Limited" },
+        { name: "Limited Drops", href: "/shop?collection=limited" },
     ];
 
     return (
@@ -92,6 +95,8 @@ export default function Navbar() {
                             <span className="text-[10px] font-black uppercase tracking-widest hidden lg:block">Account</span>
                         </Link>
 
+                        <LanguageSwitcher />
+
                         <button
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                             className="md:hidden p-2 hover:bg-white/10 rounded-full transition-colors text-white"
@@ -113,7 +118,7 @@ export default function Navbar() {
                                     className="h-full flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-accent border-b-2 border-transparent hover:border-accent transition-all relative group"
                                 >
                                     {cat.name}
-                                    {cat.name === "Men" && <span className="ml-1 text-[8px] bg-accent/10 text-accent px-1 rounded animate-pulse">Hot</span>}
+                                    {(cat as any).badge && <span className="ml-1 text-[8px] bg-accent/10 text-accent px-1 rounded animate-pulse">{(cat as any).badge}</span>}
                                 </Link>
                             </li>
                         ))}

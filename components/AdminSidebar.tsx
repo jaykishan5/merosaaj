@@ -42,6 +42,7 @@ export default function AdminSidebar({
         { name: "Products", href: "/admin/products", icon: Package },
         { name: "Inventory", href: "/admin/inventory", icon: ShoppingBag },
         { name: "Users", href: "/admin/users", icon: Users },
+        { name: "Returns", href: "/admin/returns", icon: Package },
         { name: "Coupons", href: "/admin/coupons", icon: Tag },
     ];
 

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import Image from "next/image";
+import { toast } from 'sonner';
 
 import { TableSkeleton } from "@/components/AdminSkeletons";
 
@@ -67,10 +68,12 @@ export default function AdminUsersPage() {
             const res = await fetch(`/api/admin/users?userId=${userId}`, {
                 method: "DELETE",
             });
-            if (res.ok) fetchUsers();
-            else {
+            if (res.ok) {
+                toast.success("User deleted successfully");
+                fetchUsers();
+            } else {
                 const data = await res.json();
-                alert(data.message || "Failed to delete user");
+                toast.error(data.message || "Failed to delete user");
             }
         } catch (error) {
             console.error("Failed to delete user", error);

@@ -1,15 +1,72 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { X, RefreshCw, CheckCircle } from 'lucide-react';
 import { formatPrice, formatDate } from '@/lib/utils';
 import Image from 'next/image';
+import { toast } from 'sonner';
 
 interface OrderDetailsModalProps {
     order: any | null;
     isOpen: boolean;
     onClose: () => void;
+    onOrderUpdated?: () => void;
+    enableReturns?: boolean;
 }
 
-export default function OrderDetailsModal({ order, isOpen, onClose }: OrderDetailsModalProps) {
+export default function OrderDetailsModal({ order, isOpen, onClose, onOrderUpdated, enableReturns = false }: OrderDetailsModalProps) {
+    const [isReturnMode, setIsReturnMode] = useState(false);
+    const [returnReason, setReturnReason] = useState("");
+    const [returnComment, setReturnComment] = useState("");
+    const [isSuccess, setIsSuccess] = useState(false);
+
+    const [hasReturn, setHasReturn] = useState(false);
+
+    // Reset state when modal opens/closes or order changes
+    useEffect(() => {
+        if (isOpen) {
+            setIsReturnMode(false);
+            setReturnReason("");
+            setReturnComment("");
+            setIsSuccess(false);
+            checkReturnStatus();
+        }
+    }, [isOpen, order]);
+
+    const checkReturnStatus = async () => {
+        if (!order) return;
+        try {
+            // This is a bit inefficient to fetch all user orders to check one status or use a dedicated endpoint. 
+            // For now, let's just assume we check via a new endpoint or the create endpoint handles it. 
+            // Actually, best to have a GET endpoint for specific order return status. 
+            // Or simpler: The order object itself likely doesn't have it unless populated.
+            // Let's rely on the user trying to open it or fetch a check.
+            // A better way for this MVP:
+            // Let's add a lightweight check call or just handle the error from the API 
+            // AND adding a client-side check if we have the data.
+            // Since we don't have the data in `order` prop easily without re-fetching, 
+            // Let's just create a `useEffect` that calls an API to check if return exists for this order.
+
+            // To save time/complexity, I'll hit the create endpoint with a dry-run or 
+            // just assume if the user has returns in their profile they are loaded. 
+            // No, independent check is safer.
+            // Let's add a GET /api/returns/check?orderId=... 
+            // BUT I haven't created that route. 
+            // Implementation: I will just try to create it and if it fails with 'already exists' I show that state? 
+            // No, I want to disable the button if it exists.
+
+            // Let's query the specific return for this order.
+            const res = await fetch(`/api/returns?orderId=${order._id}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data && data.length > 0) {
+                    setHasReturn(true);
+                }
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
     if (!order) return null;
 
     return (
@@ -83,6 +140,51 @@ export default function OrderDetailsModal({ order, isOpen, onClose }: OrderDetai
                                 <p className="text-sm text-muted-foreground font-medium">{order.shippingAddress.address}</p>
                                 <p className="text-sm text-muted-foreground font-medium">{order.shippingAddress.city}, {order.shippingAddress.phone}</p>
                             </div>
+
+                            {/* Shipping Label Logic */}
+                            <div className="pt-4 border-t border-dashed border-border/50">
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-2">
+                                    Logistics
+                                </h3>
+                                {order.trackingNumber ? (
+                                    <div className="space-y-2">
+                                        <p className="text-xs font-bold">Carrier: <span className="text-primary">{order.carrier}</span></p>
+                                        <p className="text-xs font-bold">Tracking: <span className="font-mono bg-muted px-1 rounded">{order.trackingNumber}</span></p>
+                                        {order.shippingLabelUrl && (
+                                            <a href={order.shippingLabelUrl} target="_blank" rel="noreferrer" className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline block mt-1">
+                                                View Label
+                                            </a>
+                                        )}
+                                    </div>
+                                ) : (
+                                    (order.status === 'Processing' || order.status === 'Pending') && (
+                                        <button
+                                            onClick={async () => {
+                                                try {
+                                                    const res = await fetch("/api/shipping/label", {
+                                                        method: "POST",
+                                                        headers: { "Content-Type": "application/json" },
+                                                        body: JSON.stringify({ orderId: order._id }),
+                                                    });
+                                                    if (res.ok) {
+                                                        const data = await res.json();
+                                                        toast.success(`Label generated! Tracking: ${data.trackingNumber}`);
+                                                        if (onOrderUpdated) onOrderUpdated();
+                                                    } else {
+                                                        toast.error("Failed to generate label");
+                                                    }
+                                                } catch (e) {
+                                                    console.error(e);
+                                                    toast.error("Error generating label");
+                                                }
+                                            }}
+                                            className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 w-full"
+                                        >
+                                            Generate Shipping Label
+                                        </button>
+                                    )
+                                )}
+                            </div>
                         </div>
                         <div className="space-y-4">
                             <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
@@ -101,6 +203,114 @@ export default function OrderDetailsModal({ order, isOpen, onClose }: OrderDetai
                             </div>
                         </div>
                     </div>
+
+                    {/* Return Request (Customer) */}
+                    {enableReturns && order.status === 'Delivered' && (
+                        <div className="pt-6 border-t border-border/50">
+                            {!isReturnMode ? (
+                                <div className="bg-muted/30 p-4 rounded-3xl border border-border/50 flex flex-col items-center text-center space-y-3">
+                                    <div className="w-10 h-10 bg-card rounded-full flex items-center justify-center border border-border shadow-sm">
+                                        <RefreshCw className="w-5 h-5 text-muted-foreground" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Return Available</h3>
+                                        <p className="text-[10px] text-muted-foreground mt-1 font-medium">Item doesn't match? You can request a return.</p>
+                                    </div>
+                                    <button
+                                        onClick={() => setIsReturnMode(true)}
+                                        className="px-6 py-2.5 bg-foreground text-background rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-foreground/90 transition-all shadow-lg w-full md:w-auto"
+                                    >
+                                        Start Return Request
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="bg-card p-6 rounded-3xl border border-border/50 shadow-lg animate-in fade-in slide-in-from-bottom-4 duration-300">
+                                    <div className="flex items-center justify-between mb-6">
+                                        <h3 className="text-sm font-black uppercase tracking-wider italic flex items-center gap-2">
+                                            <RefreshCw className="w-4 h-4 text-primary" />
+                                            Return Request
+                                        </h3>
+                                        <button
+                                            onClick={() => setIsReturnMode(false)}
+                                            className="text-[10px] font-bold text-muted-foreground hover:text-foreground uppercase tracking-widest"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Reason for Return</label>
+                                            <select
+                                                className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 text-xs font-bold outline-none focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer"
+                                                value={returnReason}
+                                                onChange={(e) => setReturnReason(e.target.value)}
+                                            >
+                                                <option value="">Select a reason...</option>
+                                                <option value="Size too small">Size too small</option>
+                                                <option value="Size too large">Size too large</option>
+                                                <option value="Damaged item">Damaged item</option>
+                                                <option value="Wrong item sent">Wrong item sent</option>
+                                                <option value="Color mismatch">Color mismatch</option>
+                                                <option value="Changed mind">Changed mind</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Additional Comments</label>
+                                            <textarea
+                                                className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 text-xs font-medium outline-none focus:ring-2 focus:ring-primary/20 transition-all min-h-[80px] resize-none"
+                                                placeholder="Please provide more details about the issue..."
+                                                value={returnComment}
+                                                onChange={(e) => setReturnComment(e.target.value)}
+                                            />
+                                        </div>
+
+                                        <button
+                                            onClick={async () => {
+                                                if (!returnReason) {
+                                                    toast.error("Please select a reason");
+                                                    return;
+                                                }
+
+                                                try {
+                                                    const res = await fetch("/api/returns", {
+                                                        method: "POST",
+                                                        headers: { "Content-Type": "application/json" },
+                                                        body: JSON.stringify({
+                                                            orderId: order._id,
+                                                            items: order.orderItems.map((i: any) => ({
+                                                                product: i.product,
+                                                                quantity: i.quantity,
+                                                                reason: returnReason + (returnComment ? ` - ${returnComment}` : ""),
+                                                                condition: 'Unopened'
+                                                            }))
+                                                        }),
+                                                    });
+                                                    if (res.ok) {
+                                                        toast.success("Return request submitted successfully.");
+                                                        setIsReturnMode(false);
+                                                        onClose();
+                                                        if (onOrderUpdated) onOrderUpdated();
+                                                    } else {
+                                                        const data = await res.json();
+                                                        toast.error(`Return request failed: ${data.error}`);
+                                                    }
+                                                } catch (e) {
+                                                    console.error(e);
+                                                    toast.error("Error submitting request");
+                                                }
+                                            }}
+                                            className="w-full py-4 bg-primary text-primary-foreground rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-primary/90 transition-all shadow-xl shadow-primary/20"
+                                        >
+                                            Submit Request
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </DialogDescription>
             </DialogContent>
             <style jsx global>{`

@@ -16,6 +16,12 @@ export interface IProduct extends Document {
     gender: 'Men' | 'Women' | 'Unisex';
     images: string[];
     variants: IVariant[];
+    flashSale?: {
+        endTime: Date;
+        isActive: boolean;
+        salePrice: number;
+        totalStock: number;
+    };
     isFeatured: boolean;
     allowPreOrder: boolean;
     releaseDate?: Date;
@@ -42,6 +48,12 @@ const ProductSchema = new Schema<IProduct>(
         gender: { type: String, enum: ['Men', 'Women', 'Unisex'], default: 'Unisex' },
         images: [{ type: String }],
         variants: [VariantSchema],
+        flashSale: {
+            endTime: { type: Date },
+            isActive: { type: Boolean, default: false },
+            salePrice: { type: Number },
+            totalStock: { type: Number },
+        },
         isFeatured: { type: Boolean, default: false },
         allowPreOrder: { type: Boolean, default: false },
         releaseDate: { type: Date },

@@ -6,6 +6,7 @@ import { Plus, Trash2, Edit, Package, Search, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { formatPrice } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { toast } from 'sonner';
 
 export default function AdminProductsPage() {
     const { data: session, status }: any = useSession();
@@ -48,6 +49,57 @@ export default function AdminProductsPage() {
         p.category.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            setLoading(true); // Re-use loading or add specific state
+            const res = await fetch("/api/admin/products/import", {
+                method: "POST",
+                body: formData,
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                toast.success(`Import successful: ${data.results.success} added/updated, ${data.results.failed} failed.`);
+                fetchProducts();
+            } else {
+                toast.error(`Import failed: ${data.error}`);
+            }
+        } catch (error) {
+            console.error("Import error", error);
+            toast.error("Import failed due to an error.");
+        } finally {
+            setLoading(false);
+            e.target.value = ""; // Reset input
+        }
+    };
+
+    const handleExport = async () => {
+        try {
+            const res = await fetch("/api/admin/products/export");
+            if (res.ok) {
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `products-export-${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                toast.success("Export successful");
+            } else {
+                toast.error("Export failed.");
+            }
+        } catch (error) {
+            console.error("Export error", error);
+        }
+    };
+
     if (loading) return (
         <div className="flex-1 flex items-center justify-center p-20">
             <div className="flex flex-col items-center gap-4">
@@ -64,12 +116,24 @@ export default function AdminProductsPage() {
                     <h1 className="text-4xl font-black tracking-tighter uppercase italic">Inventory Management</h1>
                     <p className="text-muted-foreground mt-1">Manage your collection and stock levels.</p>
                 </div>
-                <button
-                    onClick={() => router.push("/admin/products/add")}
-                    className="flex items-center px-8 py-4 bg-primary text-primary-foreground rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
-                >
-                    <Plus className="w-5 h-5 mr-2" /> Add New Product
-                </button>
+                <div className="flex items-center gap-3">
+                    <label className="cursor-pointer flex items-center px-6 py-4 bg-muted text-foreground rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-muted/80 transition-all">
+                        <span>Import CSV</span>
+                        <input type="file" accept=".csv" onChange={handleImport} className="hidden" />
+                    </label>
+                    <button
+                        onClick={handleExport}
+                        className="flex items-center px-6 py-4 bg-muted text-foreground rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-muted/80 transition-all"
+                    >
+                        Export CSV
+                    </button>
+                    <button
+                        onClick={() => router.push("/admin/products/add")}
+                        className="flex items-center px-8 py-4 bg-primary text-primary-foreground rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+                    >
+                        <Plus className="w-5 h-5 mr-2" /> Add New Product
+                    </button>
+                </div>
             </div>
 
             <div className="relative mb-10">

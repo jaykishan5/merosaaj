@@ -8,15 +8,20 @@ import { formatPrice } from "@/lib/utils";
 import { useCart, useWishlist } from "@/lib/store";
 import { motion } from "framer-motion";
 import { ShoppingBag, ChevronLeft, Heart, Share2, Star, MapPin, Truck, RotateCcw, ShieldCheck, Smartphone, MessageSquare } from "lucide-react";
+import { toast } from 'sonner';
 import Link from "next/link";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import ReviewsSection from "@/components/ReviewsSection";
 import RelatedProducts from "@/components/RelatedProducts";
 import LocationModal from "@/components/LocationModal";
 import WhatsAppButton from "@/components/WhatsAppButton";
-import BundleSection from "@/components/BundleSection"; // New import
+import SizeGuideModal from "@/components/SizeGuideModal";
+import BundleSection from "@/components/BundleSection";
+import RecentlyViewed from "@/components/RecentlyViewed";
+import { useRecentlyViewed } from "@/lib/store";
 import SocialShare from "@/components/SocialShare";
-import { Package as PackageIcon } from "lucide-react";
+import { Package as PackageIcon, Zap } from "lucide-react";
+import CountdownTimer from "@/components/CountdownTimer";
 
 export default function ProductDetailsPage() {
     const { slug } = useParams();
@@ -28,6 +33,7 @@ export default function ProductDetailsPage() {
     const [activeImage, setActiveImage] = useState(0);
     const { addItem } = useCart();
     const { toggleItem, isInWishlist } = useWishlist();
+    const { addToHistory } = useRecentlyViewed();
     const isWishlisted = product ? isInWishlist(product._id) : false;
     const [quantity, setQuantity] = useState(1);
     const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
@@ -58,6 +64,20 @@ export default function ProductDetailsPage() {
         if (slug) fetchProduct();
     }, [slug]);
 
+    // Add to Recently Viewed
+    useEffect(() => {
+        if (product) {
+            addToHistory({
+                _id: product._id,
+                name: product.name,
+                slug: product.slug,
+                price: product.price,
+                discountPrice: product.discountPrice,
+                image: product.images[0]
+            });
+        }
+    }, [product, addToHistory]);
+
     const handleQuantityChange = (delta: number) => {
         if (!product) return;
         const variant = product.variants.find((v: any) => v.size === selectedSize && v.color === selectedColor);
@@ -71,12 +91,12 @@ export default function ProductDetailsPage() {
 
     const handleShare = () => {
         navigator.clipboard.writeText(window.location.href);
-        alert("Link copied to clipboard!");
+        toast.info("Link copied to clipboard!");
     };
 
     const handleAddToCart = (quiet = false) => {
         if (!product || !selectedSize || !selectedColor) {
-            alert("Please select a size and color");
+            toast.error("Please select a size and color");
             return;
         }
 
@@ -98,7 +118,7 @@ export default function ProductDetailsPage() {
         if (!quiet) {
             // Reset quantity after adding
             setQuantity(1);
-            alert("Added to bag! View your cart to checkout.");
+            toast.success("Added to bag! View your cart to checkout.");
         }
     };
 
@@ -225,28 +245,66 @@ export default function ProductDetailsPage() {
                             <hr className="border-gray-50" />
 
                             {/* Pricing */}
+                            {/* Pricing */}
                             <div className="bg-white p-6 lg:p-0 rounded-2xl lg:rounded-none border lg:border-0 border-gray-100 shadow-sm lg:shadow-none">
-                                <span className="text-4xl md:text-5xl font-black text-primary tracking-tighter">{formatPrice(product.discountPrice || product.price)}</span>
-                                {product.discountPrice && (
-                                    <div className="flex items-center space-x-3 mt-1">
-                                        <span className="text-base md:text-lg text-muted-foreground line-through decoration-muted-foreground/50">{formatPrice(product.price)}</span>
-                                        <span className="text-[10px] md:text-sm font-black text-accent bg-accent/10 px-2 py-0.5 rounded tracking-widest uppercase">-{Math.round((1 - product.discountPrice / product.price) * 100)}% OFF</span>
+                                {product.flashSale?.isActive && new Date(product.flashSale.endTime) > new Date() ? (
+                                    <div className="space-y-1">
+                                        <div className="flex items-center gap-2 text-rose-600 font-bold text-xs uppercase tracking-widest animate-pulse">
+                                            <Zap className="w-4 h-4 fill-rose-600" /> Flash Sale Active
+                                        </div>
+                                        <span className="text-4xl md:text-5xl font-black text-rose-600 tracking-tighter">{formatPrice(product.flashSale.salePrice)}</span>
+                                        <div className="flex items-center space-x-3 mt-1">
+                                            <span className="text-base md:text-lg text-muted-foreground line-through decoration-muted-foreground/50">{formatPrice(product.price)}</span>
+                                            <span className="text-[10px] md:text-sm font-black text-white bg-rose-600 px-2 py-0.5 rounded tracking-widest uppercase">
+                                                -{Math.round((1 - product.flashSale.salePrice / product.price) * 100)}% OFF
+                                            </span>
+                                        </div>
                                     </div>
+                                ) : (
+                                    <>
+                                        <span className="text-4xl md:text-5xl font-black text-primary tracking-tighter">{formatPrice(product.discountPrice || product.price)}</span>
+                                        {product.discountPrice && (
+                                            <div className="flex items-center space-x-3 mt-1">
+                                                <span className="text-base md:text-lg text-muted-foreground line-through decoration-muted-foreground/50">{formatPrice(product.price)}</span>
+                                                <span className="text-[10px] md:text-sm font-black text-accent bg-accent/10 px-2 py-0.5 rounded tracking-widest uppercase">-{Math.round((1 - product.discountPrice / product.price) * 100)}% OFF</span>
+                                            </div>
+                                        )}
+                                    </>
                                 )}
                             </div>
 
                             {/* Promo Banner - Merosaaj Branded */}
-                            <motion.div
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                className="bg-primary p-4 rounded-xl text-primary-foreground flex justify-between items-center text-xs font-black uppercase tracking-[0.15em] border-l-4 border-accent shadow-xl"
-                            >
-                                <span className="flex items-center gap-3">
-                                    <div className="w-2 h-2 rounded-full bg-accent animate-pulse"></div>
-                                    Season Drop: Culturally Rooted
-                                </span>
-                                <div className="bg-accent text-white px-4 py-1.5 rounded-lg text-[9px] font-black">MEROSAAJ EXCLUSIVE</div>
-                            </motion.div>
+                            {/* Promo Banner - Merosaaj Branded */}
+                            {product.flashSale?.isActive && new Date(product.flashSale.endTime) > new Date() ? (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="bg-rose-50 p-4 rounded-xl border border-rose-100 flex flex-col sm:flex-row justify-between items-center gap-4"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="bg-rose-100 p-2 rounded-lg">
+                                            <Zap className="w-5 h-5 text-rose-600 fill-rose-600" />
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-black text-rose-700 uppercase tracking-widest">Ending Soon</p>
+                                            <p className="text-[10px] text-rose-600/80 font-bold">Don't miss out on this deal.</p>
+                                        </div>
+                                    </div>
+                                    <CountdownTimer targetDate={product.flashSale.endTime} />
+                                </motion.div>
+                            ) : (
+                                <motion.div
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    className="bg-primary p-4 rounded-xl text-primary-foreground flex justify-between items-center text-xs font-black uppercase tracking-[0.15em] border-l-4 border-accent shadow-xl"
+                                >
+                                    <span className="flex items-center gap-3">
+                                        <div className="w-2 h-2 rounded-full bg-accent animate-pulse"></div>
+                                        Season Drop: Culturally Rooted
+                                    </span>
+                                    <div className="bg-accent text-white px-4 py-1.5 rounded-lg text-[9px] font-black">MEROSAAJ EXCLUSIVE</div>
+                                </motion.div>
+                            )}
 
                             {/* Variants & Actions Section */}
                             <div className="bg-white p-6 lg:p-0 rounded-2xl lg:rounded-none border lg:border-0 border-gray-100 shadow-sm lg:shadow-none space-y-8">
@@ -275,7 +333,10 @@ export default function ProductDetailsPage() {
 
                                     {/* Size Selector */}
                                     <div className="space-y-4">
-                                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Select Size: <span className="text-primary">{selectedSize}</span></h4>
+                                        <div className="flex justify-between items-center">
+                                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Select Size: <span className="text-primary">{selectedSize}</span></h4>
+                                            <SizeGuideModal />
+                                        </div>
                                         <div className="flex flex-wrap gap-2.5">
                                             {allSizes.map((size: any) => (
                                                 <motion.button
@@ -364,7 +425,7 @@ export default function ProductDetailsPage() {
                                                     <button
                                                         onClick={async () => {
                                                             const email = (document.getElementById('notify_email') as HTMLInputElement).value;
-                                                            if (!email) return alert("Email required");
+                                                            if (!email) return toast.error("Email required");
                                                             const res = await fetch("/api/products/stock/notify", {
                                                                 method: "POST",
                                                                 headers: { "Content-Type": "application/json" },
@@ -376,7 +437,7 @@ export default function ProductDetailsPage() {
                                                                 }),
                                                             });
                                                             const data = await res.json();
-                                                            alert(data.message);
+                                                            toast.info(data.message);
                                                         }}
                                                         className="bg-primary text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors"
                                                     >
@@ -435,7 +496,7 @@ export default function ProductDetailsPage() {
                                             handleBuyNow();
                                         } else {
                                             // Trigger modal or notification logic (simplified here)
-                                            alert("Sign up for back-in-stock notifications above!");
+                                            toast.info("Sign up for back-in-stock notifications above!");
                                         }
                                     }}
                                     className={`flex-1 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg ${currentVariant && currentVariant.stock > 0
@@ -598,6 +659,8 @@ export default function ProductDetailsPage() {
                 <BundleSection productId={product._id} />
 
                 <RelatedProducts category={product.category} currentProductId={product._id} />
+
+                <RecentlyViewed />
             </main>
 
             <LocationModal

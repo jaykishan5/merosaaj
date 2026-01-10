@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Trash2, Image as ImageIcon, Loader2 } from "lucide-react";
+import { toast } from 'sonner';
 import Image from "next/image";
 
 export default function EditProductPage({ params }: { params: { id: string } }) {
@@ -51,11 +52,12 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                         variants: data.variants || []
                     });
                 } else {
-                    alert("Failed to load product");
+                    toast.error("Failed to load product");
                     router.push("/admin/products");
                 }
             } catch (error) {
                 console.error("Error fetching product:", error);
+                toast.error("Error loading product");
                 router.push("/admin/products");
             } finally {
                 setFetching(false);
@@ -100,7 +102,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
             }
         } catch (error) {
             console.error("Upload failed", error);
-            alert("Upload failed");
+            toast.error("Upload failed");
         } finally {
             setUploadingIndex(null);
         }
@@ -143,13 +145,14 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
             });
 
             if (res.ok) {
+                toast.success("Product updated successfully");
                 router.push("/admin/products");
             } else {
-                alert("Failed to update product");
+                toast.error("Failed to update product");
             }
         } catch (error) {
             console.error(error);
-            alert("An error occurred");
+            toast.error("An error occurred");
         } finally {
             setLoading(false);
         }

@@ -1,0 +1,19 @@
+{
+    "Navbar": {
+        "home": "Home",
+        "shop": "Shop",
+        "newArrivals": "New Arrivals",
+        "about": "About",
+        "searchPlaceholder": "Search products..."
+    },
+    "Hero": {
+        "title": "Wear Your Roots",
+        "subtitle": "Premium cultural wear designed for the modern day.",
+        "cta": "Shop Collection"
+    },
+    "Common": {
+        "addToCart": "Add to Bag",
+        "buyNow": "Buy Now",
+        "outOfStock": "Out of Stock"
+    }
+}

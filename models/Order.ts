@@ -39,6 +39,9 @@ export interface IOrder extends Document {
     status: 'Pending' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
     couponCode?: string;
     couponDiscount?: number;
+    trackingNumber?: string;
+    carrier?: string;
+    shippingLabelUrl?: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -86,6 +89,9 @@ const OrderSchema = new Schema<IOrder>(
         },
         couponCode: { type: String },
         couponDiscount: { type: Number, default: 0.0 },
+        trackingNumber: { type: String },
+        carrier: { type: String },
+        shippingLabelUrl: { type: String },
     },
     { timestamps: true }
 );

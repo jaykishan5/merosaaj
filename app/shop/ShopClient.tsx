@@ -19,7 +19,8 @@ export default function ShopPage() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const genderParam = searchParams.get("gender") || "all";
-    const categoryParam = searchParams.get("category") || "all";
+    const collectionParam = searchParams.get("collection");
+    const categoryParam = searchParams.get("category") || (collectionParam === "limited" ? "Limited" : "all");
 
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);

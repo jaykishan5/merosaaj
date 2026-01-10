@@ -15,22 +15,30 @@ export async function GET(req: Request) {
         const minPrice = searchParams.get("minPrice");
         const maxPrice = searchParams.get("maxPrice");
         const color = searchParams.get("color");
+        const isFlashSale = searchParams.get("flash_sale");
 
         await dbConnect();
 
         // Auto-seed if database is empty
+        const forceUpdate = searchParams.get("force_update");
+
+        // Auto-seed if database is empty OR force_update is true
         const count = await Product.countDocuments();
-        if (count === 0) {
+        if (count === 0 || forceUpdate === 'true') {
+            if (forceUpdate === 'true') {
+                await Product.deleteMany({}); // Clear existing products
+            }
+
             const seedProducts = [
                 // MEN'S CLOTHING
                 {
                     name: "Valley Oversized Tee",
                     slug: "valley-oversized-tee",
-                    description: "Minimalist off-white tee with premium drop-shoulder fit. Essential urban wear.",
+                    description: "Minimalist off-white tee featuring hand-woven Dhaka fabric pocket accents. 100% Nepali cotton.",
                     price: 1800,
                     category: "Clothing",
                     gender: "Men",
-                    images: ["https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80"],
+                    images: ["https://images.unsplash.com/photo-1491336477066-31156b5e4f35?q=80&w=2670&auto=format&fit=crop"], // Clean male portrait
                     variants: [{ size: "M", color: "Cream", stock: 20 }, { size: "L", color: "Cream", stock: 25 }],
                     isFeatured: true,
                 },
@@ -41,7 +49,7 @@ export async function GET(req: Request) {
                     price: 5500,
                     category: "Clothing",
                     gender: "Men",
-                    images: ["https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80"],
+                    images: ["https://images.unsplash.com/photo-1559551409-dadc959f76b8?q=80&w=2670&auto=format&fit=crop"], // Bomber jacket vibe
                     variants: [{ size: "L", color: "Black", stock: 10 }],
                     isFeatured: false,
                 },
@@ -54,7 +62,7 @@ export async function GET(req: Request) {
                     price: 3200,
                     category: "Clothing",
                     gender: "Women",
-                    images: ["https://images.unsplash.com/photo-1517438476312-10d79c67750d?auto=format&fit=crop&q=80"],
+                    images: ["https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=2670&auto=format&fit=crop"], // Women fashion streetwear
                     variants: [{ size: "30", color: "Black", stock: 5 }, { size: "32", color: "Black", stock: 12 }],
                     isFeatured: false,
                 },
@@ -65,21 +73,21 @@ export async function GET(req: Request) {
                     price: 2800,
                     category: "Clothing",
                     gender: "Women",
-                    images: ["https://images.unsplash.com/photo-1564584217132-2271feaeb3c5?auto=format&fit=crop&q=80"],
+                    images: ["https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=2020&auto=format&fit=crop"], // Hoodie/Sweatshirt fashion
                     variants: [{ size: "S", color: "Grey", stock: 15 }],
                     isFeatured: true,
                 },
 
                 // UNISEX CLOTHING
                 {
-                    name: "Merosaaj Heritage Hoodie",
+                    name: "Heritage Hoodie",
                     slug: "heritage-hoodie",
-                    description: "Heavyweight charcoal hoodie featuring hand-embroidered cultural motifs. 100% organic cotton.",
+                    description: "Heavyweight charcoal hoodie featuring hand-embroidered mandala motifs. 100% organic Himalayan cotton.",
                     price: 4500,
                     discountPrice: 3800,
                     category: "Clothing",
                     gender: "Unisex",
-                    images: ["https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&q=80"],
+                    images: ["https://images.unsplash.com/photo-1578587018452-892bacefd3f2?q=80&w=2574&auto=format&fit=crop"],
                     variants: [{ size: "M", color: "Charcoal", stock: 15 }, { size: "L", color: "Charcoal", stock: 8 }],
                     isFeatured: true,
                 },
@@ -90,7 +98,7 @@ export async function GET(req: Request) {
                     price: 2200,
                     category: "Clothing",
                     gender: "Unisex",
-                    images: ["https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&q=80"],
+                    images: ["https://images.unsplash.com/photo-1523396870717-81681d54ad16?q=80&w=2660&auto=format&fit=crop"],
                     variants: [{ size: "L", color: "Black", stock: 5 }],
                     isFeatured: true,
                 },
@@ -114,7 +122,7 @@ export async function GET(req: Request) {
                     price: 1800,
                     category: "Accessories",
                     gender: "Unisex",
-                    images: ["https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&q=80"],
+                    images: ["https://images.unsplash.com/photo-1548036328-c9fa89d128fa?q=80&w=2670&auto=format&fit=crop"], // Leather bag texture
                     variants: [{ size: "One Size", color: "Olive", stock: 25 }],
                     isFeatured: false,
                 },
@@ -125,7 +133,7 @@ export async function GET(req: Request) {
                     price: 2500,
                     category: "Accessories",
                     gender: "Unisex",
-                    images: ["https://images.unsplash.com/photo-1599643478518-17488fbbcd75?auto=format&fit=crop&q=80"],
+                    images: ["https://images.unsplash.com/photo-1611085583191-a3b181a88401?q=80&w=2670&auto=format&fit=crop"],
                     variants: [{ size: "One Size", color: "Silver", stock: 10 }],
                     isFeatured: false,
                 }
@@ -188,6 +196,11 @@ export async function GET(req: Request) {
 
         if (color && color !== "all") {
             filter["variants.color"] = color;
+        }
+
+        if (isFlashSale === "true") {
+            filter["flashSale.isActive"] = true;
+            filter["flashSale.endTime"] = { $gt: new Date() };
         }
 
         const size = searchParams.get("size");

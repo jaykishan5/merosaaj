@@ -109,3 +109,36 @@ export const useWishlist = create<WishlistStore>()(
         }
     )
 );
+
+export interface RecentlyViewedItem {
+    _id: string;
+    name: string;
+    slug: string;
+    price: number;
+    discountPrice?: number;
+    image: string;
+}
+
+interface RecentlyViewedStore {
+    items: RecentlyViewedItem[];
+    addToHistory: (item: RecentlyViewedItem) => void;
+    clearHistory: () => void;
+}
+
+export const useRecentlyViewed = create<RecentlyViewedStore>()(
+    persist(
+        (set, get) => ({
+            items: [],
+            addToHistory: (newItem) => {
+                const currentItems = get().items;
+                const filtered = currentItems.filter((i) => i._id !== newItem._id);
+                const updated = [newItem, ...filtered].slice(0, 10);
+                set({ items: updated });
+            },
+            clearHistory: () => set({ items: [] }),
+        }),
+        {
+            name: 'merosaaj-recently-viewed',
+        }
+    )
+);

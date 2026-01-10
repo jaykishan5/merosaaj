@@ -238,6 +238,8 @@ export default function ProfilePage() {
                 order={selectedOrder}
                 isOpen={!!selectedOrder}
                 onClose={() => setSelectedOrder(null)}
+                enableReturns={true}
+                onOrderUpdated={fetchUserOrders}
             />
 
             <ProfileSettingsModal

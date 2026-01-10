@@ -9,6 +9,7 @@ import { ChevronRight, Truck, CreditCard, Banknote, ShoppingBag, MapPin } from "
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import AddressBookModal from "@/components/AddressBookModal";
+import { toast } from 'sonner';
 
 export default function CheckoutPage() {
     const { data: session } = useSession();
@@ -89,7 +90,7 @@ export default function CheckoutPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!shippingInfo.address || !shippingInfo.phone) {
-            alert("Please fill in all address fields");
+            toast.error("Please fill in all address fields");
             return;
         }
 
@@ -149,16 +150,16 @@ export default function CheckoutPage() {
                     document.body.appendChild(form);
                     form.submit();
                 } else if (paymentMethod === "Khalti") {
-                    alert("Khalti implementation triggered (Dev Mode)");
+                    toast.info("Khalti implementation triggered (Dev Mode)");
                     clearCart();
                     router.push(`/?success=true`);
                 }
             } else {
-                alert(data.message || "Failed to place order");
+                toast.error(data.message || "Failed to place order");
             }
         } catch (err) {
             console.error(err);
-            alert("Something went wrong");
+            toast.error("Something went wrong");
         } finally {
             setLoading(false);
         }

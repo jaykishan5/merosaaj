@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Plus, Trash2, Save, Image as ImageIcon } from "lucide-react";
+import { toast } from 'sonner';
 import Image from "next/image";
 
 
@@ -61,7 +62,7 @@ export default function AddProductPage() {
             }
         } catch (error) {
             console.error("Upload failed", error);
-            alert("Upload failed");
+            toast.error("Upload failed");
         } finally {
             setUploadingIndex(null);
         }
@@ -105,13 +106,14 @@ export default function AddProductPage() {
             });
 
             if (res.ok) {
+                toast.success("Product added successfully");
                 router.push("/admin/products");
             } else {
-                alert("Failed to add product");
+                toast.error("Failed to add product");
             }
         } catch (error) {
             console.error(error);
-            alert("An error occurred");
+            toast.error("An error occurred");
         } finally {
             setLoading(false);
         }
