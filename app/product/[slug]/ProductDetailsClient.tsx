@@ -208,7 +208,7 @@ export default function ProductDetailsClient({ product: initialProduct }: { prod
                                         <div className="flex items-center gap-2 text-rose-600 font-bold text-xs uppercase tracking-widest animate-pulse">
                                             <Zap className="w-4 h-4 fill-rose-600" /> Flash Sale Active
                                         </div>
-                                        <span className="text-4xl md:text-5xl font-black text-rose-600 tracking-tighter">{formatPrice(product.flashSale.salePrice)}</span>
+                                        <span className="text-3xl md:text-5xl font-black text-rose-600 tracking-tighter">{formatPrice(product.flashSale.salePrice)}</span>
                                         <div className="flex items-center space-x-3 mt-1">
                                             <span className="text-base md:text-lg text-muted-foreground line-through decoration-muted-foreground/50">{formatPrice(product.price)}</span>
                                             <span className="text-[10px] md:text-sm font-black text-white bg-rose-600 px-2 py-0.5 rounded tracking-widest uppercase">
@@ -218,7 +218,7 @@ export default function ProductDetailsClient({ product: initialProduct }: { prod
                                     </div>
                                 ) : (
                                     <>
-                                        <span className="text-4xl md:text-5xl font-black text-primary tracking-tighter">{formatPrice(product.discountPrice || product.price)}</span>
+                                        <span className="text-3xl md:text-5xl font-black text-primary tracking-tighter">{formatPrice(product.discountPrice || product.price)}</span>
                                         {product.discountPrice && (
                                             <div className="flex items-center space-x-3 mt-1">
                                                 <span className="text-base md:text-lg text-muted-foreground line-through decoration-muted-foreground/50">{formatPrice(product.price)}</span>
@@ -427,50 +427,52 @@ export default function ProductDetailsClient({ product: initialProduct }: { prod
                             </div>
 
                             {/* Mobile Sticky CTA */}
-                            <div className="fixed bottom-0 left-0 right-0 z-[100] bg-white border-t border-gray-100 p-4 pb-8 lg:hidden flex gap-3 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] safe-area-bottom">
-                                <motion.button
-                                    whileTap={{ scale: 0.95 }}
-                                    onClick={() => toggleItem({
-                                        _id: product._id,
-                                        name: product.name,
-                                        slug: product.slug,
-                                        price: product.price,
-                                        discountPrice: product.discountPrice,
-                                        image: product.images[0]
-                                    })}
-                                    className={`w-14 h-14 border-2 rounded-2xl flex items-center justify-center transition-colors ${isWishlisted ? "border-accent text-accent fill-accent" : "border-gray-100 text-gray-400"}`}
-                                >
-                                    <Heart className="w-5 h-5" />
-                                </motion.button>
-                                <motion.button
-                                    whileTap={{ scale: 0.98 }}
-                                    onClick={() => {
-                                        if (currentVariant && currentVariant.stock > 0) {
-                                            handleAddToCart();
-                                        } else if (product.allowPreOrder) {
-                                            handleBuyNow();
-                                        } else {
-                                            toast.info("Sign up for back-in-stock notifications above!");
-                                        }
-                                    }}
-                                    className={`flex-1 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg ${currentVariant && currentVariant.stock > 0
-                                        ? "bg-primary text-white"
-                                        : product.allowPreOrder
-                                            ? "bg-accent text-white"
-                                            : "bg-muted text-muted-foreground opacity-50"
-                                        }`}
-                                >
-                                    {currentVariant && currentVariant.stock > 0
-                                        ? "Add to Bag"
-                                        : product.allowPreOrder
-                                            ? "Pre-order Now"
-                                            : "Sold Out"}
-                                </motion.button>
+                            <div className="fixed bottom-0 left-0 right-0 z-[100] bg-white border-t border-gray-100 p-4 pb-8 lg:hidden flex flex-col gap-2 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] safe-area-bottom">
+                                <div className="flex gap-3">
+                                    <motion.button
+                                        whileTap={{ scale: 0.95 }}
+                                        onClick={() => toggleItem({
+                                            _id: product._id,
+                                            name: product.name,
+                                            slug: product.slug,
+                                            price: product.price,
+                                            discountPrice: product.discountPrice,
+                                            image: product.images[0]
+                                        })}
+                                        className={`w-14 h-14 border-2 rounded-2xl flex items-center justify-center transition-colors ${isWishlisted ? "border-accent text-accent fill-accent" : "border-gray-100 text-gray-400"}`}
+                                    >
+                                        <Heart className="w-5 h-5" />
+                                    </motion.button>
+                                    <motion.button
+                                        whileTap={{ scale: 0.98 }}
+                                        onClick={() => {
+                                            if (currentVariant && currentVariant.stock > 0) {
+                                                handleAddToCart();
+                                            } else if (product.allowPreOrder) {
+                                                handleBuyNow();
+                                            } else {
+                                                toast.info("Sign up for back-in-stock notifications above!");
+                                            }
+                                        }}
+                                        className={`flex-1 h-14 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg ${currentVariant && currentVariant.stock > 0
+                                            ? "bg-primary text-white"
+                                            : product.allowPreOrder
+                                                ? "bg-accent text-white"
+                                                : "bg-muted text-muted-foreground opacity-50"
+                                            }`}
+                                    >
+                                        {currentVariant && currentVariant.stock > 0
+                                            ? "Add to Bag"
+                                            : product.allowPreOrder
+                                                ? "Pre-order Now"
+                                                : "Sold Out"}
+                                    </motion.button>
+                                </div>
                                 {(currentVariant && currentVariant.stock > 0) && (
                                     <motion.button
                                         whileTap={{ scale: 0.98 }}
                                         onClick={handleBuyNow}
-                                        className="flex-1 bg-accent text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-accent/20"
+                                        className="w-full h-14 bg-accent text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-accent/20"
                                     >
                                         Instant Buy
                                     </motion.button>

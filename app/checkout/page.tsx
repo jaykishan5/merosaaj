@@ -117,7 +117,6 @@ export default function CheckoutPage() {
 
             if (res.ok) {
                 if (paymentMethod === "COD") {
-                    clearCart();
                     router.push(`/order/${data.orderId}?success=true`);
                 } else if (paymentMethod === "eSewa") {
                     const esewaRes = await fetch("/api/payment/esewa/initiate", {
@@ -184,10 +183,10 @@ export default function CheckoutPage() {
     };
 
     useEffect(() => {
-        if (items.length === 0) {
+        if (items.length === 0 && !loading) {
             router.push("/cart");
         }
-    }, [items.length, router]);
+    }, [items.length, router, loading]);
 
     if (items.length === 0) {
         return null;

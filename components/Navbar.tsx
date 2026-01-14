@@ -62,7 +62,7 @@ export default function Navbar() {
                     </div>
 
                     {/* Icons */}
-                    <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="flex items-center gap-2 sm:gap-4">
                         <button
                             onClick={() => setIsSearchOpen(true)}
                             className="md:hidden p-2 hover:bg-white/10 rounded-full transition-colors text-primary-foreground/70 hover:text-white"
@@ -95,11 +95,13 @@ export default function Navbar() {
                             <span className="text-[10px] font-black uppercase tracking-widest hidden lg:block">Account</span>
                         </Link>
 
-                        <LanguageSwitcher />
+                        <div className="hidden md:block">
+                            <LanguageSwitcher />
+                        </div>
 
                         <button
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                            className="md:hidden p-2 hover:bg-white/10 rounded-full transition-colors text-white"
+                            className="p-2 hover:bg-white/10 rounded-full transition-colors text-white"
                         >
                             <Menu className="w-6 h-6" />
                         </button>
@@ -293,8 +295,13 @@ export default function Navbar() {
                                     transition={{ delay: (categories.length + 3) * 0.1 }}
                                     className="space-y-8 pt-8 border-t border-white/5"
                                 >
-                                    <div className="flex items-center gap-8">
-                                        <Link href="/help" onClick={() => setIsMobileMenuOpen(false)} className="text-white/40 hover:text-white font-black text-[10px] uppercase tracking-[0.2em] transition-colors">Help Center</Link>
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-8">
+                                            <Link href="/help" onClick={() => setIsMobileMenuOpen(false)} className="text-white/40 hover:text-white font-black text-[10px] uppercase tracking-[0.2em] transition-colors">Help Center</Link>
+                                        </div>
+                                        <div>
+                                            <LanguageSwitcher />
+                                        </div>
                                     </div>
                                     <div className="bg-gradient-to-r from-accent/10 to-transparent p-4 rounded-2xl border border-accent/20 flex items-center justify-between">
                                         <div>
