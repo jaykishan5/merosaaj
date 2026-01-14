@@ -5,7 +5,6 @@ import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
 
 import GoogleProvider from "next-auth/providers/google";
-import FacebookProvider from "next-auth/providers/facebook";
 
 export const authOptions: NextAuthOptions = {
     session: {
@@ -15,10 +14,6 @@ export const authOptions: NextAuthOptions = {
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID!,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-        }),
-        FacebookProvider({
-            clientId: process.env.FACEBOOK_CLIENT_ID!,
-            clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
         }),
         CredentialsProvider({
             name: "credentials",
@@ -59,7 +54,7 @@ export const authOptions: NextAuthOptions = {
     ],
     callbacks: {
         async signIn({ user, account, profile }: any) {
-            if (account.provider === "google" || account.provider === "facebook") {
+            if (account.provider === "google") {
                 await dbConnect();
                 try {
                     const existingUser = await User.findOne({ email: user.email });

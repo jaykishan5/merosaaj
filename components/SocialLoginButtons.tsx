@@ -21,20 +21,16 @@ export default function SocialLoginButtons() {
                     whileHover={{ scale: 1.02, backgroundColor: "#f8f9fa" }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => signIn("google", { callbackUrl: "/" })}
-                    className="flex items-center justify-center gap-3 w-full py-3.5 px-4 bg-white border border-border rounded-xl font-bold shadow-sm transition-all hover:shadow-md"
+                    className="flex items-center justify-center gap-3 w-full py-3.5 px-4 bg-white border border-border rounded-xl font-bold shadow-sm transition-all hover:shadow-md group"
                 >
-                    <Image src="/images/google-icon.svg" alt="Google" width={20} height={20} />
+                    <Image
+                        src="/images/google-icon.svg"
+                        alt="Google"
+                        width={20}
+                        height={20}
+                        className="object-contain"
+                    />
                     <span className="text-sm font-black uppercase tracking-wider text-primary">Continue with Google</span>
-                </motion.button>
-
-                <motion.button
-                    whileHover={{ scale: 1.02, backgroundColor: "#f0f2f5" }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => signIn("facebook", { callbackUrl: "/" })}
-                    className="flex items-center justify-center gap-3 w-full py-3.5 px-4 bg-white border border-border rounded-xl font-bold shadow-sm transition-all hover:shadow-md"
-                >
-                    <Image src="/images/facebook-icon.svg" alt="Facebook" width={20} height={20} />
-                    <span className="text-sm font-black uppercase tracking-wider text-primary">Continue with Facebook</span>
                 </motion.button>
             </div>
         </div>
