@@ -14,7 +14,7 @@ export default function WhatsAppButton({
     productName,
     productSlug,
     variant,
-    phoneNumber = "9779800000000" // Replace with real admin number
+    phoneNumber = "9779864593097" // Updated admin number
 }: WhatsAppButtonProps) {
     const message = `Namaste Merosaaj! 🇳🇵 I'm interested in the ${productName}${variant ? ` (${variant})` : ''}. Could you provide more details? \n\nLink: https://merosaaj.com/product/${productSlug}`;
     const encodedMessage = encodeURIComponent(message);

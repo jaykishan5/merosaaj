@@ -30,7 +30,7 @@ export default function ContactPage() {
                                 </div>
                                 <div>
                                     <h3 className="font-bold">Call Us</h3>
-                                    <p className="text-muted-foreground">+977 1 4XXXXXX</p>
+                                    <p className="text-muted-foreground">+977 9864593097</p>
                                 </div>
                             </div>
                             <div className="flex items-start space-x-4">
