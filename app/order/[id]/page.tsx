@@ -14,7 +14,7 @@ export default async function OrderPage({ params }: { params: { id: string } }) 
     }
 
     await dbConnect();
-    const order = await Order.findById(params.id).lean();
+    const order = await Order.findById(params.id).lean() as any;
 
     if (!order) {
         return (
