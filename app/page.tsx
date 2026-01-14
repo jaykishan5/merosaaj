@@ -98,7 +98,7 @@ export default async function Home() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2 relative h-[400px] md:h-[500px] rounded-[2rem] md:rounded-[3rem] overflow-hidden group cursor-pointer shadow-2xl">
                             <Image
-                                src="https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?q=80&w=2574&auto=format&fit=crop" // High fashion lifestyle
+                                src="/images/modern-streetwear.png" // Generated premium asset
                                 alt="Modern Streetwear"
                                 fill
                                 className="object-cover group-hover:scale-105 transition-transform duration-700 opacity-60"
@@ -111,10 +111,10 @@ export default async function Home() {
                         </div>
                         <div className="relative h-[500px] rounded-[3rem] overflow-hidden group cursor-pointer shadow-2xl">
                             <Image
-                                src="https://images.unsplash.com/photo-1596701062351-df5f8aad5539?q=80&w=2574&auto=format&fit=crop" // Intricate texture/jewelry
+                                src="/images/premium-accessories.png" // Generated premium asset
                                 alt="Accessories"
                                 fill
-                                className="object-cover group-hover:scale-105 transition-transform duration-700 opacity-40"
+                                className="object-cover group-hover:scale-105 transition-transform duration-700 opacity-60"
                             />
                             <div className="absolute inset-0 flex flex-col justify-end p-12">
                                 <span className="text-accent font-black uppercase tracking-[0.4em] mb-4">The Kit</span>
