@@ -20,7 +20,7 @@ const slides = [
         title: "HIMALAYAN GRIT",
         subtitle: "Technical Drop",
         description: "Engineered for resilience. Built for the streets of the valley.",
-        image: "https://images.unsplash.com/photo-1505305976870-c0be14404ebb?q=80&w=2670&auto=format&fit=crop", // Kathmandu urban vibes
+        image: "/images/himalayan-grit.jpg", // Replacement image
         color: "primary"
     },
 ];
