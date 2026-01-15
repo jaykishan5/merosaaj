@@ -84,7 +84,7 @@ export default function CheckoutPage() {
     };
 
     const discountAmount = calculateDiscount();
-    const shippingPrice = 100;
+    const shippingPrice = shippingInfo.region === "Outside Valley" ? 200 : 100;
     const finalTotal = totalPrice() + shippingPrice - discountAmount;
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -267,7 +267,7 @@ export default function CheckoutPage() {
                                             onChange={(e) => setShippingInfo({ ...shippingInfo, region: e.target.value as any })}
                                         >
                                             <option value="Kathmandu Valley">Kathmandu Valley (NPR 100)</option>
-                                            <option value="Outside Valley">Outside Valley (NPR 100)</option>
+                                            <option value="Outside Valley">Outside Valley (NPR 200)</option>
                                         </select>
                                     </div>
                                 </div>

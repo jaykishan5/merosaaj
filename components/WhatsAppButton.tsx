@@ -16,7 +16,8 @@ export default function WhatsAppButton({
     variant,
     phoneNumber = "9779864593097" // Updated admin number
 }: WhatsAppButtonProps) {
-    const message = `Namaste Merosaaj! 🇳🇵 I'm interested in the ${productName}${variant ? ` (${variant})` : ''}. Could you provide more details? \n\nLink: https://merosaaj.com/product/${productSlug}`;
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://merosaaj.com';
+    const message = `Namaste Merosaaj! 🇳🇵 I'm interested in the ${productName}${variant ? ` (${variant})` : ''}. Could you provide more details? \n\nLink: ${baseUrl}/product/${productSlug}`;
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
 

@@ -8,6 +8,8 @@ export interface IUser extends Document {
     phone?: string;
     role: 'CUSTOMER' | 'ADMIN';
     searchHistory?: string[];
+    loyaltyPoints: number;
+    lifetimeSpent: number;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -21,6 +23,8 @@ const UserSchema = new Schema<IUser>(
         phone: { type: String },
         role: { type: String, enum: ['CUSTOMER', 'ADMIN'], default: 'CUSTOMER' },
         searchHistory: [{ type: String }],
+        loyaltyPoints: { type: Number, default: 0 },
+        lifetimeSpent: { type: Number, default: 0 },
     },
     { timestamps: true }
 );
